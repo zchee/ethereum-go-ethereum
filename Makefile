@@ -2,7 +2,7 @@
 # with Go source code. If you know what GOPATH is then you probably
 # don't need to bother with make.
 
-.PHONY: geth android ios evm all test clean
+.PHONY: geth android ios evm all test clean godef
 
 GOBIN = ./build/bin
 GO ?= latest
@@ -36,3 +36,10 @@ devtools:
 	env GOBIN= go install ./cmd/abigen
 	@type "solc" 2> /dev/null || echo 'Please install solc'
 	@type "protoc" 2> /dev/null || echo 'Please install protoc'
+
+godef:
+	@rm -f rpc/constants_unix.go
+	@touch rpc/constants_unix.go
+	@printf "//go:build darwin || dragonfly || freebsd || linux || nacl || netbsd || openbsd || solaris\n" >> rpc/constants_unix.go
+	@printf "// +build darwin dragonfly freebsd linux nacl netbsd openbsd solaris\n\n" >> rpc/constants_unix.go
+	@go tool cgo -objdir _obj -godefs rpc/constants_godef_unix.go >> rpc/constants_unix.go
