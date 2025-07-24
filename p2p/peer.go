@@ -182,10 +182,8 @@ func (p *Peer) Caps() []Cap {
 // versions is supported by both this node and the peer p.
 func (p *Peer) RunningCap(protocol string, versions []uint) bool {
 	if proto, ok := p.running[protocol]; ok {
-		for _, ver := range versions {
-			if proto.Version == ver {
-				return true
-			}
+		if slices.Contains(versions, proto.Version) {
+			return true
 		}
 	}
 	return false
@@ -555,7 +553,7 @@ type PeerInfo struct {
 		Trusted       bool   `json:"trusted"`
 		Static        bool   `json:"static"`
 	} `json:"network"`
-	Protocols map[string]interface{} `json:"protocols"` // Sub-protocol specific metadata fields
+	Protocols map[string]any `json:"protocols"` // Sub-protocol specific metadata fields
 }
 
 // Info gathers and returns a collection of metadata known about a peer.
@@ -571,7 +569,7 @@ func (p *Peer) Info() *PeerInfo {
 		ID:        p.ID().String(),
 		Name:      p.Fullname(),
 		Caps:      caps,
-		Protocols: make(map[string]interface{}, len(p.running)),
+		Protocols: make(map[string]any, len(p.running)),
 	}
 	if p.Node().Seq() > 0 {
 		info.ENR = p.Node().String()
@@ -584,7 +582,7 @@ func (p *Peer) Info() *PeerInfo {
 
 	// Gather all the running protocol infos
 	for _, proto := range p.running {
-		protoInfo := interface{}("unknown")
+		protoInfo := any("unknown")
 		if query := proto.Protocol.PeerInfo; query != nil {
 			if metadata := query(p.ID()); metadata != nil {
 				protoInfo = metadata

@@ -397,7 +397,7 @@ func checkReceiptsRLP(have, want types.Receipts) error {
 	if len(have) != len(want) {
 		return fmt.Errorf("receipts sizes mismatch: have %d, want %d", len(have), len(want))
 	}
-	for i := 0; i < len(want); i++ {
+	for i := range want {
 		rlpHave, err := rlp.EncodeToBytes(have[i])
 		if err != nil {
 			return err
@@ -559,8 +559,8 @@ func TestHashesInRange(t *testing.T) {
 	db := NewMemoryDatabase()
 	// For each number, write N versions of that particular number
 	total := 0
-	for i := 0; i < 15; i++ {
-		for ii := 0; ii < i; ii++ {
+	for i := range 15 {
+		for ii := range i {
 			WriteHeader(db, mkHeader(i, ii))
 			total++
 		}
@@ -637,7 +637,7 @@ func makeTestBlocks(nblock int, txsPerBlock int) []*types.Block {
 
 	// Create transactions.
 	txs := make([]*types.Transaction, txsPerBlock)
-	for i := 0; i < len(txs); i++ {
+	for i := range txs {
 		var err error
 		to := common.Address{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 		txs[i], err = types.SignNewTx(key, signer, &types.LegacyTx{
@@ -653,7 +653,7 @@ func makeTestBlocks(nblock int, txsPerBlock int) []*types.Block {
 
 	// Create the blocks.
 	blocks := make([]*types.Block, nblock)
-	for i := 0; i < nblock; i++ {
+	for i := range nblock {
 		header := &types.Header{
 			Number: big.NewInt(int64(i)),
 			Extra:  []byte("test block"),
@@ -668,10 +668,10 @@ func makeTestBlocks(nblock int, txsPerBlock int) []*types.Block {
 func makeTestReceipts(n int, nPerBlock int) []types.Receipts {
 	receipts := make([]*types.Receipt, nPerBlock)
 	var logs []*types.Log
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		logs = append(logs, new(types.Log))
 	}
-	for i := 0; i < len(receipts); i++ {
+	for i := range receipts {
 		receipts[i] = &types.Receipt{
 			Status:            types.ReceiptStatusSuccessful,
 			CumulativeGasUsed: 0x888888888,
@@ -679,7 +679,7 @@ func makeTestReceipts(n int, nPerBlock int) []types.Receipts {
 		}
 	}
 	allReceipts := make([]types.Receipts, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		allReceipts[i] = receipts
 	}
 	return allReceipts
@@ -910,7 +910,7 @@ func TestHeadersRLPStorage(t *testing.T) {
 	// Create blocks
 	var chain []*types.Block
 	var pHash common.Hash
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		block := types.NewBlockWithHeader(&types.Header{
 			Number:      big.NewInt(int64(i)),
 			Extra:       []byte("test block"),

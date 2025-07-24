@@ -183,7 +183,7 @@ func fuzzCrossG1MultiExp(data []byte) int {
 		blstPoints   []*blst.P1Affine
 	)
 	// n random scalars (max 17)
-	for i := 0; i < 17; i++ {
+	for range 17 {
 		// note that geth/crypto/bls12381 works only with scalars <= 32bytes
 		s, err := randomScalar(input, fr.Modulus())
 		if err != nil {
@@ -234,7 +234,7 @@ func fuzzCrossG2MultiExp(data []byte) int {
 		blstPoints   []*blst.P2Affine
 	)
 	// n random scalars (max 17)
-	for i := 0; i < 17; i++ {
+	for range 17 {
 		// note that geth/crypto/bls12381 works only with scalars <= 32bytes
 		s, err := randomScalar(input, fr.Modulus())
 		if err != nil {
@@ -336,7 +336,7 @@ func randomScalar(r io.Reader, max *big.Int) (k *big.Int, err error) {
 // multiExpG1Gnark is a naive implementation of G1 multi-exponentiation
 func multiExpG1Gnark(gs []gnark.G1Affine, scalars []fr.Element) gnark.G1Affine {
 	res := gnark.G1Affine{}
-	for i := 0; i < len(gs); i++ {
+	for i := range gs {
 		tmp := new(gnark.G1Affine)
 		sb := scalars[i].Bytes()
 		scalarBytes := new(big.Int).SetBytes(sb[:])
@@ -349,7 +349,7 @@ func multiExpG1Gnark(gs []gnark.G1Affine, scalars []fr.Element) gnark.G1Affine {
 // multiExpG2Gnark is a naive implementation of G2 multi-exponentiation
 func multiExpG2Gnark(gs []gnark.G2Affine, scalars []fr.Element) gnark.G2Affine {
 	res := gnark.G2Affine{}
-	for i := 0; i < len(gs); i++ {
+	for i := range gs {
 		tmp := new(gnark.G2Affine)
 		sb := scalars[i].Bytes()
 		scalarBytes := new(big.Int).SetBytes(sb[:])

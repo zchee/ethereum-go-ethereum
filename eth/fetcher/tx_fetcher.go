@@ -333,10 +333,7 @@ func (f *TxFetcher) Enqueue(peer string, txs []*types.Transaction, direct bool) 
 	)
 	// proceed in batches
 	for i := 0; i < len(txs); i += addTxsBatchSize {
-		end := i + addTxsBatchSize
-		if end > len(txs) {
-			end = len(txs)
-		}
+		end := min(i+addTxsBatchSize, len(txs))
 		var (
 			duplicate   int64
 			underpriced int64
@@ -1030,7 +1027,7 @@ func rotateStrings(slice []string, n int) {
 	orig := make([]string, len(slice))
 	copy(orig, slice)
 
-	for i := 0; i < len(orig); i++ {
+	for i := range orig {
 		slice[i] = orig[(i+n)%len(orig)]
 	}
 }

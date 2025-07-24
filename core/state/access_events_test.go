@@ -31,7 +31,7 @@ var (
 )
 
 func init() {
-	for i := byte(0); i < 20; i++ {
+	for i := range byte(20) {
 		testAddr[i] = i
 		testAddr[2] = 2 * i
 	}
@@ -96,7 +96,7 @@ func TestContractCreateInitGas(t *testing.T) {
 	ae := NewAccessEvents(utils.NewPointCache(1024))
 
 	var testAddr [20]byte
-	for i := byte(0); i < 20; i++ {
+	for i := range byte(20) {
 		testAddr[i] = i
 	}
 

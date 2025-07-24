@@ -56,7 +56,7 @@ func testHeaderVerification(t *testing.T, scheme string) {
 		t.Fatal(err)
 	}
 
-	for i := 0; i < len(blocks); i++ {
+	for i := range blocks {
 		for j, valid := range []bool{true, false} {
 			var results <-chan error
 

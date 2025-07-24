@@ -147,7 +147,7 @@ func newTester(t *testing.T, historyLimit uint64, isVerkle bool, layers int, ena
 			snapStorages: make(map[common.Hash]map[common.Hash]map[common.Hash][]byte),
 		}
 	)
-	for i := 0; i < layers; i++ {
+	for i := range layers {
 		var parent = types.EmptyRootHash
 		if len(obj.roots) != 0 {
 			parent = obj.roots[len(obj.roots)-1]
@@ -171,7 +171,7 @@ func (t *tester) hashPreimage(hash common.Hash) common.Hash {
 }
 
 func (t *tester) extend(layers int) {
-	for i := 0; i < layers; i++ {
+	for i := range layers {
 		var parent = types.EmptyRootHash
 		if len(t.roots) != 0 {
 			parent = t.roots[len(t.roots)-1]
@@ -202,7 +202,7 @@ func (t *tester) generateStorage(ctx *genctx, addr common.Address) common.Hash {
 		storage  = make(map[common.Hash][]byte)
 		origin   = make(map[common.Hash][]byte)
 	)
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		v, _ := rlp.EncodeToBytes(common.TrimLeftZeroes(testrand.Bytes(32)))
 		key := testrand.Bytes(32)
 		hash := crypto.Keccak256Hash(key)
@@ -233,7 +233,7 @@ func (t *tester) mutateStorage(ctx *genctx, addr common.Address, root common.Has
 			break
 		}
 	}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		v, _ := rlp.EncodeToBytes(common.TrimLeftZeroes(testrand.Bytes(32)))
 		key := testrand.Bytes(32)
 		hash := crypto.Keccak256Hash(key)
@@ -275,7 +275,7 @@ func (t *tester) generate(parent common.Hash, rawStorageKey bool) (common.Hash, 
 		ctx     = newCtx(parent)
 		dirties = make(map[common.Hash]struct{})
 	)
-	for i := 0; i < 20; i++ {
+	for i := range 20 {
 		// Start with account creation always
 		op := createAccountOp
 		if i > 0 {

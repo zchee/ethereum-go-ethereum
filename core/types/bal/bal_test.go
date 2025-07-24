@@ -117,11 +117,11 @@ func makeTestAccountAccess(sort bool) AccountAccess {
 		balances      []encodingBalanceChange
 		nonces        []encodingAccountNonce
 	)
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		slot := encodingSlotWrites{
 			Slot: testrand.Hash(),
 		}
-		for j := 0; j < 3; j++ {
+		for j := range 3 {
 			slot.Accesses = append(slot.Accesses, encodingStorageWrite{
 				TxIdx:      uint16(2 * j),
 				ValueAfter: testrand.Hash(),
@@ -140,7 +140,7 @@ func makeTestAccountAccess(sort bool) AccountAccess {
 		})
 	}
 
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		storageReads = append(storageReads, testrand.Hash())
 	}
 	if sort {
@@ -149,7 +149,7 @@ func makeTestAccountAccess(sort bool) AccountAccess {
 		})
 	}
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		balances = append(balances, encodingBalanceChange{
 			TxIdx:   uint16(2 * i),
 			Balance: [16]byte(testrand.Bytes(16)),
@@ -161,7 +161,7 @@ func makeTestAccountAccess(sort bool) AccountAccess {
 		})
 	}
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		nonces = append(nonces, encodingAccountNonce{
 			TxIdx: uint16(2 * i),
 			Nonce: uint64(i + 100),
@@ -190,7 +190,7 @@ func makeTestAccountAccess(sort bool) AccountAccess {
 
 func makeTestBAL(sort bool) BlockAccessList {
 	list := BlockAccessList{}
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		list.Accesses = append(list.Accesses, makeTestAccountAccess(sort))
 	}
 	if sort {

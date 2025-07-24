@@ -104,7 +104,7 @@ func TestClientErrorData(t *testing.T) {
 	client := DialInProc(server)
 	defer client.Close()
 
-	var resp interface{}
+	var resp any
 	err := client.Call(&resp, "test_returnError")
 	if err == nil {
 		t.Fatal("expected error")
@@ -139,17 +139,17 @@ func TestClientBatchRequest(t *testing.T) {
 	batch := []BatchElem{
 		{
 			Method: "test_echo",
-			Args:   []interface{}{"hello", 10, &echoArgs{"world"}},
+			Args:   []any{"hello", 10, &echoArgs{"world"}},
 			Result: new(echoResult),
 		},
 		{
 			Method: "test_echo",
-			Args:   []interface{}{"hello2", 11, &echoArgs{"world"}},
+			Args:   []any{"hello2", 11, &echoArgs{"world"}},
 			Result: new(echoResult),
 		},
 		{
 			Method: "no_such_method",
-			Args:   []interface{}{1, 2, 3},
+			Args:   []any{1, 2, 3},
 			Result: new(int),
 		},
 	}
@@ -159,17 +159,17 @@ func TestClientBatchRequest(t *testing.T) {
 	wantResult := []BatchElem{
 		{
 			Method: "test_echo",
-			Args:   []interface{}{"hello", 10, &echoArgs{"world"}},
+			Args:   []any{"hello", 10, &echoArgs{"world"}},
 			Result: &echoResult{"hello", 10, &echoArgs{"world"}},
 		},
 		{
 			Method: "test_echo",
-			Args:   []interface{}{"hello2", 11, &echoArgs{"world"}},
+			Args:   []any{"hello2", 11, &echoArgs{"world"}},
 			Result: &echoResult{"hello2", 11, &echoArgs{"world"}},
 		},
 		{
 			Method: "no_such_method",
-			Args:   []interface{}{1, 2, 3},
+			Args:   []any{1, 2, 3},
 			Result: new(int),
 			Error:  &jsonError{Code: -32601, Message: "the method no_such_method does not exist/is not available"},
 		},
@@ -373,7 +373,7 @@ func testClientCancel(transport string, t *testing.T) {
 	)
 	caller := func(index int) {
 		defer wg.Done()
-		for i := 0; i < nreqs; i++ {
+		for range nreqs {
 			var (
 				ctx     context.Context
 				cancel  func()
@@ -405,7 +405,7 @@ func testClientCancel(transport string, t *testing.T) {
 		}
 	}
 	wg.Add(ncallers)
-	for i := 0; i < ncallers; i++ {
+	for i := range ncallers {
 		go caller(i)
 	}
 	wg.Wait()
@@ -419,7 +419,7 @@ func TestClientSubscribeInvalidArg(t *testing.T) {
 	client := DialInProc(server)
 	defer client.Close()
 
-	check := func(shouldPanic bool, arg interface{}) {
+	check := func(shouldPanic bool, arg any) {
 		defer func() {
 			err := recover()
 			if shouldPanic && err == nil {
@@ -457,7 +457,7 @@ func TestClientSubscribe(t *testing.T) {
 	if err != nil {
 		t.Fatal("can't subscribe:", err)
 	}
-	for i := 0; i < count; i++ {
+	for i := range count {
 		if val := <-nc; val != i {
 			t.Fatalf("value mismatch: got %d, want %d", val, i)
 		}
@@ -529,7 +529,7 @@ func TestClientCloseUnsubscribeRace(t *testing.T) {
 	server := newTestServer()
 	defer server.Stop()
 
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		client := DialInProc(server)
 		nc := make(chan int)
 		sub, err := client.Subscribe(context.Background(), "nftest", nc, "someSubscription", 3, 1)
@@ -690,7 +690,7 @@ func TestClientSubscriptionChannelClose(t *testing.T) {
 	client, _ := Dial(wsURL)
 	defer client.Close()
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		ch := make(chan int, 100)
 		sub, err := client.Subscribe(context.Background(), "nftest", ch, "someSubscription", 100, 1)
 		if err != nil {
@@ -725,7 +725,7 @@ func TestClientNotificationStorm(t *testing.T) {
 		defer sub.Unsubscribe()
 
 		// Process each notification, try to run a call in between each of them.
-		for i := 0; i < count; i++ {
+		for i := range count {
 			select {
 			case val := <-nc:
 				if val != i {

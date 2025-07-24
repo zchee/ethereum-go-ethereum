@@ -187,7 +187,7 @@ func TestUnmarshalJSONNewFilterArgs(t *testing.T) {
 	// multiple address exceeding max
 	var test8 FilterCriteria
 	addresses := make([]string, maxAddresses+1)
-	for i := 0; i < maxAddresses+1; i++ {
+	for i := range maxAddresses + 1 {
 		addresses[i] = fmt.Sprintf(`"%s"`, common.HexToAddress(fmt.Sprintf("0x%x", i)).Hex())
 	}
 	vector = fmt.Sprintf(`{"address": [%s]}`, strings.Join(addresses, ", "))

@@ -34,7 +34,7 @@ func TestStrictListAdd(t *testing.T) {
 	key, _ := crypto.GenerateKey()
 
 	txs := make(types.Transactions, 1024)
-	for i := 0; i < len(txs); i++ {
+	for i := range txs {
 		txs[i] = transaction(uint64(i), 0, key)
 	}
 	// Insert the transactions in a random order
@@ -58,7 +58,7 @@ func TestStrictListAdd(t *testing.T) {
 func TestListAddVeryExpensive(t *testing.T) {
 	key, _ := crypto.GenerateKey()
 	list := newList(true)
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		value := big.NewInt(100)
 		gasprice, _ := new(big.Int).SetString("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 0)
 		gaslimit := uint64(i)
@@ -73,7 +73,7 @@ func BenchmarkListAdd(b *testing.B) {
 	key, _ := crypto.GenerateKey()
 
 	txs := make(types.Transactions, 100000)
-	for i := 0; i < len(txs); i++ {
+	for i := range txs {
 		txs[i] = transaction(uint64(i), 0, key)
 	}
 	// Insert the transactions in a random order
@@ -93,7 +93,7 @@ func BenchmarkListCapOneTx(b *testing.B) {
 	key, _ := crypto.GenerateKey()
 
 	txs := make(types.Transactions, 32)
-	for i := 0; i < len(txs); i++ {
+	for i := range txs {
 		txs[i] = transaction(uint64(i), 0, key)
 	}
 

@@ -17,7 +17,7 @@ func BenchmarkCounterFloat64Parallel(b *testing.B) {
 	c := NewCounterFloat64()
 	b.ResetTimer()
 	var wg sync.WaitGroup
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		wg.Add(1)
 		go func() {
 			for i := 0; i < b.N; i++ {

@@ -38,7 +38,7 @@ func TestDatabasePreimages(t *testing.T) {
 
 	// Test inserting and retrieving preimages
 	preimages := make(map[common.Hash][]byte)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		data := []byte{byte(i), byte(i + 1), byte(i + 2)}
 		hash := common.BytesToHash(data)
 		preimages[hash] = data

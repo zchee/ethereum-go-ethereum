@@ -16,7 +16,7 @@ const epsilonPercentile = .00000000001
 func BenchmarkCompute1000(b *testing.B) {
 	s := make([]int64, 1000)
 	var sum int64
-	for i := 0; i < len(s); i++ {
+	for i := range s {
 		s[i] = int64(i)
 		sum += int64(i)
 	}
@@ -30,7 +30,7 @@ func BenchmarkCompute1000(b *testing.B) {
 func BenchmarkCompute1000000(b *testing.B) {
 	s := make([]int64, 1000000)
 	var sum int64
-	for i := 0; i < len(s); i++ {
+	for i := range s {
 		s[i] = int64(i)
 		sum += int64(i)
 	}
@@ -104,16 +104,16 @@ func TestExpDecaySample(t *testing.T) {
 // effectively freezing the set of samples until a rescale step happens.
 func TestExpDecaySampleNanosecondRegression(t *testing.T) {
 	sw := NewExpDecaySample(1000, 0.99)
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		sw.Update(10)
 	}
 	time.Sleep(1 * time.Millisecond)
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		sw.Update(20)
 	}
 	v := sw.Snapshot().values
 	avg := float64(0)
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		avg += float64(v[i])
 	}
 	avg /= float64(len(v))
@@ -155,7 +155,7 @@ func TestExpDecaySampleStatistics(t *testing.T) {
 
 func TestUniformSample(t *testing.T) {
 	sw := NewUniformSample(100)
-	for i := 0; i < 1000; i++ {
+	for i := range 1000 {
 		sw.Update(int64(i))
 	}
 	s := sw.Snapshot()
@@ -180,13 +180,13 @@ func TestUniformSample(t *testing.T) {
 func TestUniformSampleIncludesTail(t *testing.T) {
 	sw := NewUniformSample(100)
 	max := 100
-	for i := 0; i < max; i++ {
+	for i := range max {
 		sw.Update(int64(i))
 	}
 	v := sw.Snapshot().values
 	sum := 0
 	exp := (max - 1) * max / 2
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		sum += int(v[i])
 	}
 	if exp != sum {
@@ -285,7 +285,7 @@ func TestUniformSampleConcurrentUpdateCount(t *testing.T) {
 		t.Skip("skipping in short mode")
 	}
 	s := NewUniformSample(100)
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		s.Update(int64(i))
 	}
 	quit := make(chan struct{})
@@ -302,7 +302,7 @@ func TestUniformSampleConcurrentUpdateCount(t *testing.T) {
 			}
 		}
 	}()
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		s.Snapshot().Count()
 		time.Sleep(5 * time.Millisecond)
 	}
@@ -312,7 +312,7 @@ func TestUniformSampleConcurrentUpdateCount(t *testing.T) {
 func BenchmarkCalculatePercentiles(b *testing.B) {
 	pss := []float64{0.5, 0.75, 0.95, 0.99, 0.999, 0.9999}
 	var vals []int64
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		vals = append(vals, int64(rand.Int31()))
 	}
 	v := make([]int64, len(vals))

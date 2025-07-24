@@ -58,7 +58,7 @@ type ExternalAPI interface {
 	// SignTransaction request to sign the specified transaction
 	SignTransaction(ctx context.Context, args apitypes.SendTxArgs, methodSelector *string) (*ethapi.SignTransactionResult, error)
 	// SignData - request to sign the given data (plus prefix)
-	SignData(ctx context.Context, contentType string, addr common.MixedcaseAddress, data interface{}) (hexutil.Bytes, error)
+	SignData(ctx context.Context, contentType string, addr common.MixedcaseAddress, data any) (hexutil.Bytes, error)
 	// SignTypedData - request to sign the given structured data (plus prefix)
 	SignTypedData(ctx context.Context, addr common.MixedcaseAddress, data apitypes.TypedData) (hexutil.Bytes, error)
 	// EcRecover - recover public key from given message and signature
@@ -262,7 +262,7 @@ type (
 		Text string `json:"text"`
 	}
 	StartupInfo struct {
-		Info map[string]interface{} `json:"info"`
+		Info map[string]any `json:"info"`
 	}
 	UserInputRequest struct {
 		Title      string `json:"title"`
@@ -355,7 +355,7 @@ func (api *SignerAPI) derivationLoop(events chan accounts.WalletEvent) {
 			log.Info("New wallet appeared", "url", event.Wallet.URL(), "status", status)
 			var derive = func(limit int, next func() accounts.DerivationPath) {
 				// Derive first N accounts, hardcoded for now
-				for i := 0; i < limit; i++ {
+				for range limit {
 					path := next()
 					if acc, err := event.Wallet.Derive(path, true); err != nil {
 						log.Warn("Account derivation failed", "error", err)
@@ -430,7 +430,7 @@ func (api *SignerAPI) newAccount() (common.Address, error) {
 		return common.Address{}, errors.New("password based accounts not supported")
 	}
 	// Three retries to get a valid password
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		resp, err := api.UI.OnInputRequired(UserInputRequest{
 			"New account password",
 			fmt.Sprintf("Please enter a password for the new account to be created (attempt %d of 3)", i),

@@ -20,6 +20,7 @@ import (
 	"context"
 	crand "crypto/rand"
 	"math/rand"
+	"slices"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -33,7 +34,7 @@ func TestMatcher(t *testing.T) {
 	ts.setHistory(0, false)
 	ts.fm.WaitIdle()
 
-	for i := 0; i < 2000; i++ {
+	for range 2000 {
 		bhash := ts.chain.canonical[rand.Intn(len(ts.chain.canonical))]
 		receipts := ts.chain.receipts[bhash]
 		if len(receipts) == 0 {
@@ -74,11 +75,8 @@ func TestMatcher(t *testing.T) {
 			t.Fatalf("Log search error: %v", err)
 		}
 		var found bool
-		for _, l := range logs {
-			if l == log {
-				found = true
-				break
-			}
+		if slices.Contains(logs, log) {
+			found = true
 		}
 		if !found {
 			t.Fatalf("Log search did not return expected log (addresses: %v, topics: %v, expected log: %v)", addresses, topics, *log)

@@ -60,7 +60,7 @@ func FuzzTrieNodes(f *testing.F) {
 	})
 }
 
-func doFuzz(input []byte, obj interface{}, code int) {
+func doFuzz(input []byte, obj any, code int) {
 	bc := getChain()
 	defer bc.Stop()
 	fuzz.NewFromGoFuzz(input).Fuzz(obj)
@@ -99,11 +99,11 @@ func getChain() *core.BlockChain {
 		return common.BytesToHash(kB), common.BytesToHash(vB)
 	}
 	storage := make(map[common.Hash]common.Hash)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		k, v := mkStorage(i, i)
 		storage[k] = v
 	}
-	for i := 0; i < 1000; i++ {
+	for i := range 1000 {
 		binary.LittleEndian.PutUint64(a, uint64(i+0xff))
 		acc := types.Account{Balance: big.NewInt(int64(i))}
 		if i%2 == 1 {
@@ -136,10 +136,10 @@ type dummyBackend struct {
 	chain *core.BlockChain
 }
 
-func (d *dummyBackend) Chain() *core.BlockChain       { return d.chain }
-func (d *dummyBackend) RunPeer(*Peer, Handler) error  { return nil }
-func (d *dummyBackend) PeerInfo(enode.ID) interface{} { return "Foo" }
-func (d *dummyBackend) Handle(*Peer, Packet) error    { return nil }
+func (d *dummyBackend) Chain() *core.BlockChain      { return d.chain }
+func (d *dummyBackend) RunPeer(*Peer, Handler) error { return nil }
+func (d *dummyBackend) PeerInfo(enode.ID) any        { return "Foo" }
+func (d *dummyBackend) Handle(*Peer, Packet) error   { return nil }
 
 type dummyRW struct {
 	code       uint64

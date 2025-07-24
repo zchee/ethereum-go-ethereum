@@ -868,7 +868,7 @@ func (f *FilterMaps) exportCheckpoints() {
 	log.Info("Exporting log index checkpoints", "epochs", epochCount, "file", f.exportFileName)
 	w.WriteString("[\n")
 	comma := ","
-	for epoch := uint32(0); epoch < epochCount; epoch++ {
+	for epoch := range epochCount {
 		lastBlock, lastBlockId, err := f.getLastBlockOfMap(f.lastEpochMap(epoch))
 		if err != nil {
 			log.Error("Error fetching last block of epoch", "epoch", epoch, "error", err)

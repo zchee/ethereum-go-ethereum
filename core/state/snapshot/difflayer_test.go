@@ -19,6 +19,7 @@ package snapshot
 import (
 	"bytes"
 	crand "crypto/rand"
+	"maps"
 	"math/rand"
 	"testing"
 
@@ -30,9 +31,7 @@ import (
 
 func copyAccounts(accounts map[common.Hash][]byte) map[common.Hash][]byte {
 	copy := make(map[common.Hash][]byte)
-	for hash, blob := range accounts {
-		copy[hash] = blob
-	}
+	maps.Copy(copy, accounts)
 	return copy
 }
 
@@ -40,9 +39,7 @@ func copyStorage(storage map[common.Hash]map[common.Hash][]byte) map[common.Hash
 	copy := make(map[common.Hash]map[common.Hash][]byte)
 	for accHash, slots := range storage {
 		copy[accHash] = make(map[common.Hash][]byte)
-		for slotHash, blob := range slots {
-			copy[accHash][slotHash] = blob
-		}
+		maps.Copy(copy[accHash], slots)
 	}
 	return copy
 }
@@ -54,7 +51,7 @@ func TestMergeBasics(t *testing.T) {
 		storage  = make(map[common.Hash]map[common.Hash][]byte)
 	)
 	// Fill up a parent
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		h := randomHash()
 		data := randomAccount()
 
@@ -218,14 +215,14 @@ func BenchmarkSearch(b *testing.B) {
 			accounts = make(map[common.Hash][]byte)
 			storage  = make(map[common.Hash]map[common.Hash][]byte)
 		)
-		for i := 0; i < 10000; i++ {
+		for range 10000 {
 			accounts[randomHash()] = randomAccount()
 		}
 		return newDiffLayer(parent, common.Hash{}, accounts, storage)
 	}
 	var layer snapshot
 	layer = emptyLayer()
-	for i := 0; i < 128; i++ {
+	for range 128 {
 		layer = fill(layer)
 	}
 	key := crypto.Keccak256Hash([]byte{0x13, 0x38})
@@ -256,7 +253,7 @@ func BenchmarkSearchSlot(b *testing.B) {
 		accounts[accountKey] = accountRLP
 
 		accStorage := make(map[common.Hash][]byte)
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			value := make([]byte, 32)
 			crand.Read(value)
 			accStorage[randomHash()] = value
@@ -266,7 +263,7 @@ func BenchmarkSearchSlot(b *testing.B) {
 	}
 	var layer snapshot
 	layer = emptyLayer()
-	for i := 0; i < 128; i++ {
+	for range 128 {
 		layer = fill(layer)
 	}
 	b.ResetTimer()
@@ -286,12 +283,12 @@ func BenchmarkFlatten(b *testing.B) {
 			accounts = make(map[common.Hash][]byte)
 			storage  = make(map[common.Hash]map[common.Hash][]byte)
 		)
-		for i := 0; i < 100; i++ {
+		for range 100 {
 			accountKey := randomHash()
 			accounts[accountKey] = randomAccount()
 
 			accStorage := make(map[common.Hash][]byte)
-			for i := 0; i < 20; i++ {
+			for range 20 {
 				value := make([]byte, 32)
 				crand.Read(value)
 				accStorage[randomHash()] = value
@@ -334,12 +331,12 @@ func BenchmarkJournal(b *testing.B) {
 			accounts = make(map[common.Hash][]byte)
 			storage  = make(map[common.Hash]map[common.Hash][]byte)
 		)
-		for i := 0; i < 200; i++ {
+		for range 200 {
 			accountKey := randomHash()
 			accounts[accountKey] = randomAccount()
 
 			accStorage := make(map[common.Hash][]byte)
-			for i := 0; i < 200; i++ {
+			for range 200 {
 				value := make([]byte, 32)
 				crand.Read(value)
 				accStorage[randomHash()] = value

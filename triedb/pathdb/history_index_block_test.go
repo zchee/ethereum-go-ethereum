@@ -29,7 +29,7 @@ func TestBlockReaderBasic(t *testing.T) {
 		1, 5, 10, 11, 20,
 	}
 	bw, _ := newBlockWriter(nil, newIndexBlockDesc(0))
-	for i := 0; i < len(elements); i++ {
+	for i := range elements {
 		bw.append(elements[i])
 	}
 
@@ -61,7 +61,7 @@ func TestBlockReaderBasic(t *testing.T) {
 
 func TestBlockReaderLarge(t *testing.T) {
 	var elements []uint64
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		elements = append(elements, rand.Uint64())
 	}
 	slices.Sort(elements)
@@ -75,7 +75,7 @@ func TestBlockReaderLarge(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to construct the block reader, %v", err)
 	}
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		value := rand.Uint64()
 		pos := sort.Search(len(elements), func(i int) bool {
 			return elements[i] > value
@@ -103,7 +103,7 @@ func TestBlockWriterBasic(t *testing.T) {
 	if err := bw.append(1); err == nil {
 		t.Fatal("out-of-order insertion is not expected")
 	}
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		bw.append(uint64(i + 3))
 	}
 
@@ -111,7 +111,7 @@ func TestBlockWriterBasic(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to construct the block writer, %v", err)
 	}
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		if err := bw.append(uint64(i + 100)); err != nil {
 			t.Fatalf("Failed to append value %d: %v", i, err)
 		}
@@ -121,7 +121,7 @@ func TestBlockWriterBasic(t *testing.T) {
 
 func TestBlockWriterDelete(t *testing.T) {
 	bw, _ := newBlockWriter(nil, newIndexBlockDesc(0))
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		bw.append(uint64(i + 1))
 	}
 	// Pop unknown id, the request should be rejected
@@ -148,7 +148,7 @@ func TestBlcokWriterDeleteWithData(t *testing.T) {
 		1, 5, 10, 11, 20,
 	}
 	bw, _ := newBlockWriter(nil, newIndexBlockDesc(0))
-	for i := 0; i < len(elements); i++ {
+	for i := range elements {
 		bw.append(elements[i])
 	}
 
@@ -202,7 +202,7 @@ func TestBlcokWriterDeleteWithData(t *testing.T) {
 
 func TestCorruptedIndexBlock(t *testing.T) {
 	bw, _ := newBlockWriter(nil, newIndexBlockDesc(0))
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		bw.append(uint64(i + 1))
 	}
 	buf := bw.finish()
@@ -219,7 +219,7 @@ func TestCorruptedIndexBlock(t *testing.T) {
 func BenchmarkParseIndexBlock(b *testing.B) {
 	// Generate a realistic index block blob
 	bw, _ := newBlockWriter(nil, newIndexBlockDesc(0))
-	for i := 0; i < 4096; i++ {
+	for i := range 4096 {
 		bw.append(uint64(i * 2))
 	}
 	blob := bw.finish()

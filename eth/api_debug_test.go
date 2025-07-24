@@ -50,7 +50,7 @@ type Account struct {
 }
 
 func newAccounts(n int) (accounts []Account) {
-	for i := 0; i < n; i++ {
+	for range n {
 		key, _ := crypto.GenerateKey()
 		addr := crypto.PubkeyToAddress(key.PublicKey)
 		accounts = append(accounts, Account{key: key, addr: addr})

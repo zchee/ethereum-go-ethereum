@@ -125,7 +125,7 @@ func pricedDataTransaction(nonce uint64, gaslimit uint64, gasprice *big.Int, key
 
 	// 10 attempts is statistically sufficient since leading zeros in ECDSA signatures are rare and randomly distributed.
 	var retryTimes = 10
-	for i := 0; i < retryTimes; i++ {
+	for range retryTimes {
 		data := make([]byte, dataBytes)
 		crand.Read(data)
 
@@ -792,7 +792,7 @@ func TestPostponing(t *testing.T) {
 	keys := make([]*ecdsa.PrivateKey, 2)
 	accs := make([]common.Address, len(keys))
 
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 		accs[i] = crypto.PubkeyToAddress(keys[i].PublicKey)
 
@@ -801,7 +801,7 @@ func TestPostponing(t *testing.T) {
 	// Add a batch consecutive pending transactions for validation
 	txs := []*types.Transaction{}
 	for i, key := range keys {
-		for j := 0; j < 100; j++ {
+		for j := range 100 {
 			var tx *types.Transaction
 			if (i+j)%2 == 0 {
 				tx = transaction(uint64(j), 25000, key)
@@ -1000,7 +1000,7 @@ func TestQueueGlobalLimiting(t *testing.T) {
 
 	// Create a number of test accounts and fund them (last one will be the local)
 	keys := make([]*ecdsa.PrivateKey, 5)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
@@ -1213,7 +1213,7 @@ func TestPendingGlobalLimiting(t *testing.T) {
 
 	// Create a number of test accounts and fund them
 	keys := make([]*ecdsa.PrivateKey, 5)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
@@ -1345,7 +1345,7 @@ func TestPendingMinimumAllowance(t *testing.T) {
 
 	// Create a number of test accounts and fund them
 	keys := make([]*ecdsa.PrivateKey, 5)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
@@ -1394,7 +1394,7 @@ func TestRepricing(t *testing.T) {
 
 	// Create a number of test accounts and fund them
 	keys := make([]*ecdsa.PrivateKey, 3)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
@@ -1529,7 +1529,7 @@ func TestRepricingDynamicFee(t *testing.T) {
 
 	// Create a number of test accounts and fund them
 	keys := make([]*ecdsa.PrivateKey, 4)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
@@ -1648,7 +1648,7 @@ func TestUnderpricing(t *testing.T) {
 
 	// Create a number of test accounts and fund them
 	keys := make([]*ecdsa.PrivateKey, 5)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(10000000))
 	}
@@ -1738,7 +1738,7 @@ func TestStableUnderpricing(t *testing.T) {
 
 	// Create a number of test accounts and fund them
 	keys := make([]*ecdsa.PrivateKey, 2)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
@@ -1800,7 +1800,7 @@ func TestUnderpricingDynamicFee(t *testing.T) {
 
 	// Create a number of test accounts and fund them
 	keys := make([]*ecdsa.PrivateKey, 4)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
@@ -1888,7 +1888,7 @@ func TestDualHeapEviction(t *testing.T) {
 	}
 
 	add := func(urgent bool) {
-		for i := 0; i < 20; i++ {
+		for i := range 20 {
 			var tx *types.Transaction
 			// Create a test accounts and fund it
 			key, _ := crypto.GenerateKey()
@@ -1940,7 +1940,7 @@ func TestDeduplication(t *testing.T) {
 
 	// Create a batch of transactions and add a few of them
 	txs := make([]*types.Transaction, 16)
-	for i := 0; i < len(txs); i++ {
+	for i := range txs {
 		txs[i] = pricedTransaction(uint64(i), 100000, big.NewInt(1), key)
 	}
 	var firsts []*types.Transaction
@@ -2195,7 +2195,7 @@ func TestStatusCheck(t *testing.T) {
 
 	// Create the test accounts to check various transaction statuses with
 	keys := make([]*ecdsa.PrivateKey, 3)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
@@ -2516,7 +2516,7 @@ func TestSetCodeTransactions(t *testing.T) {
 			pending: 10,
 			run: func(name string) {
 				var keys []*ecdsa.PrivateKey
-				for i := 0; i < 30; i++ {
+				for range 30 {
 					key, _ := crypto.GenerateKey()
 					keys = append(keys, key)
 					addr := crypto.PubkeyToAddress(key.PublicKey)
@@ -2626,7 +2626,7 @@ func benchmarkPendingDemotion(b *testing.B, size int) {
 	account := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, account, big.NewInt(1000000))
 
-	for i := 0; i < size; i++ {
+	for i := range size {
 		tx := transaction(uint64(i), 100000, key)
 		pool.promoteTx(account, tx.Hash(), tx)
 	}
@@ -2651,7 +2651,7 @@ func benchmarkFuturePromotion(b *testing.B, size int) {
 	account := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, account, big.NewInt(1000000))
 
-	for i := 0; i < size; i++ {
+	for i := range size {
 		tx := transaction(uint64(1+i), 100000, key)
 		pool.enqueueTx(tx.Hash(), tx, true)
 	}
@@ -2678,7 +2678,7 @@ func benchmarkBatchInsert(b *testing.B, size int) {
 	batches := make([]types.Transactions, b.N)
 	for i := 0; i < b.N; i++ {
 		batches[i] = make(types.Transactions, size)
-		for j := 0; j < size; j++ {
+		for j := range size {
 			batches[i][j] = transaction(uint64(size*i+j), 100000, key)
 		}
 	}

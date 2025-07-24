@@ -60,7 +60,7 @@ func compareProgress(a legacyProgress, b SyncProgress) bool {
 			if !ok || len(subTasksB) != len(subTasksA) {
 				return false
 			}
-			for j := 0; j < len(subTasksA); j++ {
+			for j := range subTasksA {
 				if subTasksA[j].Next != subTasksB[j].Next {
 					return false
 				}
@@ -102,7 +102,7 @@ func convertLegacy(legacy legacyProgress) SyncProgress {
 		subTasks := make(map[common.Hash][]*storageTask)
 		for owner, list := range task.SubTasks {
 			var cpy []*storageTask
-			for i := 0; i < len(list); i++ {
+			for i := range list {
 				cpy = append(cpy, &storageTask{
 					Next: list[i].Next,
 					Last: list[i].Last,

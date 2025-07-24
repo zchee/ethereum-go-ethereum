@@ -40,7 +40,7 @@ func (e *revertError) ErrorCode() int {
 }
 
 // ErrorData returns the hex encoded revert reason.
-func (e *revertError) ErrorData() interface{} {
+func (e *revertError) ErrorData() any {
 	return e.reason
 }
 
@@ -77,7 +77,7 @@ func (e *TxIndexingError) ErrorCode() int {
 }
 
 // ErrorData returns the hex encoded revert reason.
-func (e *TxIndexingError) ErrorData() interface{} { return "transaction indexing is in progress" }
+func (e *TxIndexingError) ErrorData() any { return "transaction indexing is in progress" }
 
 type callError struct {
 	Message string `json:"message"`

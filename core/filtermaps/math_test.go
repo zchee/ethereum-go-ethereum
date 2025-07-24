@@ -28,7 +28,7 @@ func TestSingleMatch(t *testing.T) {
 	params := DefaultParams
 	params.deriveFields()
 
-	for count := 0; count < 100000; count++ {
+	for range 100000 {
 		// generate a row with a single random entry
 		mapIndex := rand.Uint32()
 		lvIndex := uint64(mapIndex)<<params.logValuesPerMap + uint64(rand.Intn(int(params.valuesPerMap)))
@@ -58,7 +58,7 @@ func TestPotentialMatches(t *testing.T) {
 	params.deriveFields()
 
 	var falsePositives int
-	for count := 0; count < testPmCount; count++ {
+	for range testPmCount {
 		mapIndex := rand.Uint32()
 		lvStart := uint64(mapIndex) << params.logValuesPerMap
 		var row FilterRow
@@ -76,7 +76,7 @@ func TestPotentialMatches(t *testing.T) {
 			row = append(row, params.columnIndex(lvIndex, &lvHashes[testPmLen]))
 		}
 		// randomly duplicate some entries
-		for i := 0; i < testPmLen; i++ {
+		for range testPmLen {
 			row = append(row, row[rand.Intn(len(row))])
 		}
 		// randomly mix up order of elements
@@ -121,7 +121,7 @@ func TestPotentialMatches(t *testing.T) {
 					t.Fatalf("Invalid length of matches (got %d, expected >=%d)", len(matches), testPmLen)
 				}
 				// since results are ordered, first testPmLen entries should always match exactly
-				for j := 0; j < testPmLen; j++ {
+				for j := range testPmLen {
 					if matches[j] != lvStart+uint64(j) {
 						t.Fatalf("Incorrect match at index %d (got %d, expected %d)", j, matches[j], lvStart+uint64(j))
 					}

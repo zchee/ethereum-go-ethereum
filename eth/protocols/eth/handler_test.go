@@ -159,7 +159,7 @@ func (b *testBackend) RunPeer(peer *Peer, handler Handler) error {
 	// is omitted and we will just give control back to the handler.
 	return handler(peer)
 }
-func (b *testBackend) PeerInfo(enode.ID) interface{} { panic("not implemented") }
+func (b *testBackend) PeerInfo(enode.ID) any { panic("not implemented") }
 
 func (b *testBackend) AcceptTxs() bool {
 	return true
@@ -188,7 +188,7 @@ func testGetBlockHeaders(t *testing.T, protocol uint) {
 		unknown[i] = byte(i)
 	}
 	getHashes := func(from, limit uint64) (hashes []common.Hash) {
-		for i := uint64(0); i < limit; i++ {
+		for i := range limit {
 			hashes = append(hashes, backend.chain.GetCanonicalHash(from-1-i))
 		}
 		return hashes
@@ -554,7 +554,7 @@ type decoder struct {
 	msg []byte
 }
 
-func (d decoder) Decode(val interface{}) error {
+func (d decoder) Decode(val any) error {
 	buffer := bytes.NewBuffer(d.msg)
 	s := rlp.NewStream(buffer, uint64(len(d.msg)))
 	return s.Decode(val)

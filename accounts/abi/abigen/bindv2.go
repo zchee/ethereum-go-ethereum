@@ -300,7 +300,7 @@ func BindV2(types []string, abis []string, bytecodes []string, pkg string, libs 
 		structs:   make(map[string]*tmplStruct),
 		aliases:   aliases,
 	}
-	for i := 0; i < len(types); i++ {
+	for i := range types {
 		// Parse the actual ABI to generate the binding for
 		evmABI, err := abi.JSON(strings.NewReader(abis[i]))
 		if err != nil {
@@ -352,7 +352,7 @@ func BindV2(types []string, abis []string, bytecodes []string, pkg string, libs 
 		}
 	}
 	buffer := new(bytes.Buffer)
-	funcs := map[string]interface{}{
+	funcs := map[string]any{
 		"bindtype":           bindType,
 		"bindtopictype":      bindTopicType,
 		"capitalise":         abi.ToCamelCase,

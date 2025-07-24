@@ -50,7 +50,7 @@ func TestEra1Builder(t *testing.T) {
 		builder = NewBuilder(f)
 		chain   = testchain{}
 	)
-	for i := 0; i < 128; i++ {
+	for i := range 128 {
 		chain.headers = append(chain.headers, mustEncode(&types.Header{Number: big.NewInt(int64(i))}))
 		chain.bodies = append(chain.bodies, mustEncode(&types.Body{Transactions: []*types.Transaction{types.NewTransaction(0, common.Address{byte(i)}, nil, 0, nil, nil)}}))
 		chain.receipts = append(chain.receipts, mustEncode(&types.Receipts{{CumulativeGasUsed: uint64(i)}}))

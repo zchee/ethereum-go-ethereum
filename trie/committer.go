@@ -91,7 +91,7 @@ func (c *committer) commitChildren(path []byte, n *fullNode, parallel bool) {
 		wg      sync.WaitGroup
 		nodesMu sync.Mutex
 	)
-	for i := 0; i < 16; i++ {
+	for i := range 16 {
 		child := n.Children[i]
 		if child == nil {
 			continue
@@ -175,7 +175,7 @@ func forGatherChildren(n node, onChild func(hash common.Hash)) {
 	case *shortNode:
 		forGatherChildren(n.Val, onChild)
 	case *fullNode:
-		for i := 0; i < 16; i++ {
+		for i := range 16 {
 			forGatherChildren(n.Children[i], onChild)
 		}
 	case hashNode:

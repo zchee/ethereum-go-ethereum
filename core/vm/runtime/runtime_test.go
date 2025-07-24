@@ -152,7 +152,7 @@ func BenchmarkCall(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < 400; j++ {
+		for range 400 {
 			Execute(code, cpurchase, nil)
 			Execute(code, creceived, nil)
 			Execute(code, refund, nil)
@@ -221,7 +221,7 @@ func BenchmarkEVM_SWAP1(b *testing.B) {
 			byte(vm.PUSH0), // PUSH0
 			byte(vm.PUSH0), // PUSH0
 		}
-		for i := uint64(0); i < n; i++ {
+		for range n {
 			contract = append(contract, byte(vm.SWAP1))
 		}
 		return contract

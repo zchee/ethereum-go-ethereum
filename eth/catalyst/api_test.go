@@ -293,7 +293,7 @@ func TestEth2NewBlock(t *testing.T) {
 	ethservice.BlockChain().SubscribeLogsEvent(newLogCh)
 	ethservice.BlockChain().SubscribeRemovedLogsEvent(rmLogsCh)
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		statedb, _ := ethservice.BlockChain().StateAt(parent.Root())
 		nonce := statedb.GetNonce(testAddr)
 		tx, _ := types.SignTx(types.NewContractCreation(nonce, new(big.Int), 1000000, big.NewInt(2*params.InitialBaseFee), logCode), types.LatestSigner(ethservice.BlockChain().Config()), testKey)
@@ -340,7 +340,7 @@ func TestEth2NewBlock(t *testing.T) {
 		head = ethservice.BlockChain().CurrentBlock().Number.Uint64()
 	)
 	parent = preMergeBlocks[len(preMergeBlocks)-1]
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		execData, err := assembleBlock(api, parent.Hash(), &engine.PayloadAttributes{
 			Timestamp: parent.Time() + 6,
 		})
@@ -478,7 +478,7 @@ func TestFullAPI(t *testing.T) {
 func setupBlocks(t *testing.T, ethservice *eth.Ethereum, n int, parent *types.Header, callback func(parent *types.Header), withdrawals [][]*types.Withdrawal, beaconRoots []common.Hash) []*types.Header {
 	api := NewConsensusAPI(ethservice)
 	var blocks []*types.Header
-	for i := 0; i < n; i++ {
+	for i := range n {
 		callback(parent)
 		var w []*types.Withdrawal
 		if withdrawals != nil {
@@ -591,7 +591,7 @@ func TestNewPayloadOnInvalidChain(t *testing.T) {
 		// This EVM code generates a log when the contract is created.
 		logCode = common.Hex2Bytes("60606040525b7f24ec1d3ff24c2f6ff210738839dbc339cd45a5294d85c79361016243157aae7b60405180905060405180910390a15b600a8060416000396000f360606040526008565b00")
 	)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		statedb, _ := ethservice.BlockChain().StateAt(parent.Root)
 		tx := types.MustSignNewTx(testKey, signer, &types.LegacyTx{
 			Nonce:    statedb.GetNonce(testAddr),
@@ -837,7 +837,7 @@ func TestTrickRemoteBlockCache(t *testing.T) {
 
 	head := payload2
 	// create some valid payloads on top
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		payload := getNewPayload(t, apiA, commonAncestor, nil, nil)
 		payload.ParentHash = head.BlockHash
 		payload = setBlockhash(payload)
@@ -901,7 +901,7 @@ func TestSimultaneousNewBlock(t *testing.T) {
 		api    = NewConsensusAPI(ethservice)
 		parent = preMergeBlocks[len(preMergeBlocks)-1]
 	)
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		execData, err := assembleBlock(api, parent.Hash(), &engine.PayloadAttributes{
 			Timestamp: parent.Time() + 5,
 		})
@@ -916,7 +916,7 @@ func TestSimultaneousNewBlock(t *testing.T) {
 				errMu   sync.Mutex
 			)
 			wg.Add(10)
-			for ii := 0; ii < 10; ii++ {
+			for range 10 {
 				go func() {
 					defer wg.Done()
 					if newResp, err := api.NewPayloadV1(*execData); err != nil {
@@ -955,7 +955,7 @@ func TestSimultaneousNewBlock(t *testing.T) {
 			)
 			wg.Add(10)
 			// Do each FCU 10 times
-			for ii := 0; ii < 10; ii++ {
+			for range 10 {
 				go func() {
 					defer wg.Done()
 					if _, err := api.ForkchoiceUpdatedV1(fcState, nil); err != nil {
@@ -1270,7 +1270,7 @@ func setupBodies(t *testing.T) (*node.Node, *eth.Ethereum, []*types.Block) {
 
 	// Make beacon root update for each block.
 	beaconRoots := make([]common.Hash, 10)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		beaconRoots[i] = common.Hash{byte(i)}
 	}
 

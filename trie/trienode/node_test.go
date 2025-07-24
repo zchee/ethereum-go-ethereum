@@ -44,7 +44,7 @@ func benchmarkMerge(b *testing.B, count int) {
 		hash := crypto.Keccak256Hash(blob)
 		s.AddNode(path, New(hash, blob))
 	}
-	for i := 0; i < count; i++ {
+	for range count {
 		// Random path of 4 nibbles
 		addNode(x)
 		addNode(y)

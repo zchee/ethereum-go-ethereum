@@ -36,10 +36,10 @@ func randomStateSet(n int) (map[common.Address][]byte, map[common.Address]map[co
 		accounts = make(map[common.Address][]byte)
 		storages = make(map[common.Address]map[common.Hash][]byte)
 	)
-	for i := 0; i < n; i++ {
+	for range n {
 		addr := testrand.Address()
 		storages[addr] = make(map[common.Hash][]byte)
-		for j := 0; j < 3; j++ {
+		for range 3 {
 			v, _ := rlp.EncodeToBytes(common.TrimLeftZeroes(testrand.Bytes(32)))
 			storages[addr][testrand.Hash()] = v
 		}
@@ -59,7 +59,7 @@ func makeHistories(n int) []*history {
 		parent = types.EmptyRootHash
 		result []*history
 	)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		root := testrand.Hash()
 		accounts, storages := randomStateSet(3)
 		h := newHistory(root, parent, uint64(i), accounts, storages, false)
@@ -139,7 +139,7 @@ func TestTruncateHeadHistory(t *testing.T) {
 	)
 	defer freezer.Close()
 
-	for i := 0; i < len(hs); i++ {
+	for i := range hs {
 		accountData, storageData, accountIndex, storageIndex := hs[i].encode()
 		rawdb.WriteStateHistory(freezer, uint64(i+1), hs[i].meta.encode(), accountIndex, storageIndex, accountData, storageData)
 		rawdb.WriteStateID(db, hs[i].meta.root, uint64(i+1))
@@ -167,7 +167,7 @@ func TestTruncateTailHistory(t *testing.T) {
 	)
 	defer freezer.Close()
 
-	for i := 0; i < len(hs); i++ {
+	for i := range hs {
 		accountData, storageData, accountIndex, storageIndex := hs[i].encode()
 		rawdb.WriteStateHistory(freezer, uint64(i+1), hs[i].meta.encode(), accountIndex, storageIndex, accountData, storageData)
 		rawdb.WriteStateID(db, hs[i].meta.root, uint64(i+1))
@@ -210,7 +210,7 @@ func TestTruncateTailHistories(t *testing.T) {
 		)
 		defer freezer.Close()
 
-		for i := 0; i < len(hs); i++ {
+		for i := range hs {
 			accountData, storageData, accountIndex, storageIndex := hs[i].encode()
 			rawdb.WriteStateHistory(freezer, uint64(i+1), hs[i].meta.encode(), accountIndex, storageIndex, accountData, storageData)
 			rawdb.WriteStateID(db, hs[i].meta.root, uint64(i+1))
@@ -238,7 +238,7 @@ func TestTruncateOutOfRange(t *testing.T) {
 	)
 	defer freezer.Close()
 
-	for i := 0; i < len(hs); i++ {
+	for i := range hs {
 		accountData, storageData, accountIndex, storageIndex := hs[i].encode()
 		rawdb.WriteStateHistory(freezer, uint64(i+1), hs[i].meta.encode(), accountIndex, storageIndex, accountData, storageData)
 		rawdb.WriteStateID(db, hs[i].meta.root, uint64(i+1))
@@ -294,7 +294,7 @@ func compareList[k comparable](a, b []k) bool {
 	if len(a) != len(b) {
 		return false
 	}
-	for i := 0; i < len(a); i++ {
+	for i := range a {
 		if a[i] != b[i] {
 			return false
 		}

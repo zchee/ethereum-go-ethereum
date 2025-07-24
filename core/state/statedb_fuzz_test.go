@@ -138,7 +138,7 @@ func (*stateTest) Generate(r *rand.Rand, size int) reflect.Value {
 	}
 	actions := make([][]testAction, rand.Intn(5)+1)
 
-	for i := 0; i < len(actions); i++ {
+	for i := range actions {
 		actions[i] = make([]testAction, size)
 		for j := range actions[i] {
 			if j == 0 {

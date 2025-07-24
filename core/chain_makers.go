@@ -430,7 +430,7 @@ func GenerateChain(config *params.ChainConfig, parent *types.Block, engine conse
 	triedb := triedb.NewDatabase(db, triedb.HashDefaults)
 	defer triedb.Close()
 
-	for i := 0; i < n; i++ {
+	for i := range n {
 		statedb, err := state.New(parent.Root(), state.NewDatabase(triedb, nil))
 		if err != nil {
 			panic(err)
@@ -540,7 +540,7 @@ func GenerateVerkleChain(config *params.ChainConfig, parent *types.Block, engine
 		return block, b.receipts
 	}
 
-	for i := 0; i < n; i++ {
+	for i := range n {
 		statedb, err := state.New(parent.Root(), state.NewDatabase(trdb, nil))
 		if err != nil {
 			panic(err)

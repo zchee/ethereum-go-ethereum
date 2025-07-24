@@ -205,7 +205,7 @@ func TestFork(t *testing.T) {
 
 	// 2.
 	n := int(rand.Int31n(21))
-	for i := 0; i < n; i++ {
+	for range n {
 		sim.Commit()
 	}
 

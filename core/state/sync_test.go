@@ -59,7 +59,7 @@ func makeTestState(scheme string) (ethdb.Database, Database, *triedb.Database, c
 
 	// Fill it with some arbitrary data
 	var accounts []*testAccount
-	for i := byte(0); i < 96; i++ {
+	for i := range byte(96) {
 		obj := state.getOrNewStateObject(common.BytesToAddress([]byte{i}))
 		acc := &testAccount{address: common.BytesToAddress([]byte{i})}
 
@@ -74,7 +74,7 @@ func makeTestState(scheme string) (ethdb.Database, Database, *triedb.Database, c
 			acc.code = []byte{i, i, i, i, i}
 		}
 		if i%5 == 0 {
-			for j := byte(0); j < 5; j++ {
+			for j := range byte(5) {
 				hash := crypto.Keccak256Hash([]byte{i, i, i, i, i, j, j})
 				obj.SetState(hash, hash)
 			}

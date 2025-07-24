@@ -129,7 +129,7 @@ func parseIndexBlock(blob []byte) ([]uint16, []byte, error) {
 
 	// Extract and validate that restart points are strictly ordered and within the valid
 	// data range.
-	for i := 0; i < restartLen; i++ {
+	for i := range restartLen {
 		off := dataEnd + 2*i
 		restarts[i] = binary.BigEndian.Uint16(blob[off : off+2])
 

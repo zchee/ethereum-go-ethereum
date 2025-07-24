@@ -84,7 +84,7 @@ func bigToBytes32(n *big.Int) (b [32]byte) {
 
 // reverseOrder reverses the byte order of a slice.
 func reverseOrder(b []byte) []byte {
-	for i := 0; i < 16; i++ {
+	for i := range 16 {
 		b[i], b[32-i-1] = b[32-i-1], b[i]
 	}
 	return b

@@ -180,7 +180,7 @@ type StdTraceConfig struct {
 // txTraceResult is the result of a single transaction trace.
 type txTraceResult struct {
 	TxHash common.Hash `json:"txHash"`           // transaction hash
-	Result interface{} `json:"result,omitempty"` // Trace results produced by the tracer
+	Result any         `json:"result,omitempty"` // Trace results produced by the tracer
 	Error  string      `json:"error,omitempty"`  // Trace failure produced by the tracer
 }
 
@@ -249,10 +249,7 @@ func (api *API) traceChain(start, end *types.Block, config *TraceConfig, closed 
 		reexec = *config.Reexec
 	}
 	blocks := int(end.NumberU64() - start.NumberU64())
-	threads := runtime.NumCPU()
-	if threads > blocks {
-		threads = blocks
-	}
+	threads := min(runtime.NumCPU(), blocks)
 	var (
 		pend    = new(sync.WaitGroup)
 		ctx     = context.Background()
@@ -260,7 +257,7 @@ func (api *API) traceChain(start, end *types.Block, config *TraceConfig, closed 
 		resCh   = make(chan *blockTraceTask, threads)
 		tracker = newStateTracker(maximumPendingTraceStates, start.NumberU64())
 	)
-	for th := 0; th < threads; th++ {
+	for range threads {
 		pend.Add(1)
 		go func() {
 			defer pend.Done()
@@ -654,12 +651,9 @@ func (api *API) traceBlockParallel(ctx context.Context, block *types.Block, stat
 		results   = make([]*txTraceResult, len(txs))
 		pend      sync.WaitGroup
 	)
-	threads := runtime.NumCPU()
-	if threads > len(txs) {
-		threads = len(txs)
-	}
+	threads := min(runtime.NumCPU(), len(txs))
 	jobs := make(chan *txTraceTask, threads)
-	for th := 0; th < threads; th++ {
+	for range threads {
 		pend.Add(1)
 		go func() {
 			defer pend.Done()
@@ -862,7 +856,7 @@ func containsTx(block *types.Block, hash common.Hash) bool {
 
 // TraceTransaction returns the structured logs created during the execution of EVM
 // and returns them as a JSON object.
-func (api *API) TraceTransaction(ctx context.Context, hash common.Hash, config *TraceConfig) (interface{}, error) {
+func (api *API) TraceTransaction(ctx context.Context, hash common.Hash, config *TraceConfig) (any, error) {
 	found, _, blockHash, blockNumber, index := api.backend.GetCanonicalTransaction(hash)
 	if !found {
 		// Warn in case tx indexer is not done.
@@ -910,7 +904,7 @@ func (api *API) TraceTransaction(ctx context.Context, hash common.Hash, config *
 // after executing the specified block. However, if a transaction index is provided,
 // the trace will be conducted on the state after executing the specified transaction
 // within the specified block.
-func (api *API) TraceCall(ctx context.Context, args ethapi.TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, config *TraceCallConfig) (interface{}, error) {
+func (api *API) TraceCall(ctx context.Context, args ethapi.TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, config *TraceCallConfig) (any, error) {
 	// Try to retrieve the specified block
 	var (
 		err         error
@@ -1005,7 +999,7 @@ func (api *API) TraceCall(ctx context.Context, args ethapi.TransactionArgs, bloc
 // traceTx configures a new tracer according to the provided configuration, and
 // executes the given message in the provided environment. The return value will
 // be tracer dependent.
-func (api *API) traceTx(ctx context.Context, tx *types.Transaction, message *core.Message, txctx *Context, vmctx vm.BlockContext, statedb *state.StateDB, config *TraceConfig, precompiles vm.PrecompiledContracts) (interface{}, error) {
+func (api *API) traceTx(ctx context.Context, tx *types.Transaction, message *core.Message, txctx *Context, vmctx vm.BlockContext, statedb *state.StateDB, config *TraceConfig, precompiles vm.PrecompiledContracts) (any, error) {
 	var (
 		tracer  *Tracer
 		err     error

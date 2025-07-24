@@ -267,7 +267,7 @@ func BenchmarkChainWrite_full_500k(b *testing.B) {
 // into a database.
 func makeChainForBench(db ethdb.Database, genesis *Genesis, full bool, count uint64) {
 	var hash common.Hash
-	for n := uint64(0); n < count; n++ {
+	for n := range count {
 		header := &types.Header{
 			Coinbase:    common.Address{},
 			Number:      big.NewInt(int64(n)),
@@ -339,7 +339,7 @@ func benchReadChain(b *testing.B, full bool, count uint64) {
 		if err != nil {
 			b.Fatalf("error creating chain: %v", err)
 		}
-		for n := uint64(0); n < count; n++ {
+		for n := range count {
 			header := chain.GetHeaderByNumber(n)
 			if full {
 				hash := header.Hash()

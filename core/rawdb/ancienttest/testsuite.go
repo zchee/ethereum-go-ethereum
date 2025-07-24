@@ -49,7 +49,7 @@ func basicRead(t *testing.T, newFn func(kinds []string) ethdb.AncientStore) {
 	defer db.Close()
 
 	db.ModifyAncients(func(op ethdb.AncientWriteOp) error {
-		for i := 0; i < len(data); i++ {
+		for i := range data {
 			op.AppendRaw("a", uint64(i), data[i])
 		}
 		return nil
@@ -110,7 +110,7 @@ func batchRead(t *testing.T, newFn func(kinds []string) ethdb.AncientStore) {
 	defer db.Close()
 
 	db.ModifyAncients(func(op ethdb.AncientWriteOp) error {
-		for i := 0; i < 100; i++ {
+		for i := range 100 {
 			op.AppendRaw("a", uint64(i), data[i])
 		}
 		return nil
@@ -188,7 +188,7 @@ func basicWrite(t *testing.T, newFn func(kinds []string) ethdb.AncientStore) {
 
 	// The ancient write to tables should be aligned
 	_, err := db.ModifyAncients(func(op ethdb.AncientWriteOp) error {
-		for i := 0; i < 100; i++ {
+		for i := range 100 {
 			op.AppendRaw("a", uint64(i), dataA[i])
 		}
 		return nil
@@ -199,7 +199,7 @@ func basicWrite(t *testing.T, newFn func(kinds []string) ethdb.AncientStore) {
 
 	// Test normal ancient write
 	size, err := db.ModifyAncients(func(op ethdb.AncientWriteOp) error {
-		for i := 0; i < 100; i++ {
+		for i := range 100 {
 			op.AppendRaw("a", uint64(i), dataA[i])
 			op.AppendRaw("b", uint64(i), dataB[i])
 		}
@@ -229,7 +229,7 @@ func basicWrite(t *testing.T, newFn func(kinds []string) ethdb.AncientStore) {
 	// Write should work after truncating everything
 	db.TruncateTail(0)
 	_, err = db.ModifyAncients(func(op ethdb.AncientWriteOp) error {
-		for i := 0; i < 100; i++ {
+		for i := range 100 {
 			op.AppendRaw("a", uint64(i), dataA[i])
 			op.AppendRaw("b", uint64(i), dataB[i])
 		}
@@ -276,7 +276,7 @@ func TestResettableAncientSuite(t *testing.T, newFn func(kinds []string) ethdb.R
 		defer db.Close()
 
 		db.ModifyAncients(func(op ethdb.AncientWriteOp) error {
-			for i := 0; i < 100; i++ {
+			for i := range 100 {
 				op.AppendRaw("a", uint64(i), data[i])
 			}
 			return nil
@@ -287,7 +287,7 @@ func TestResettableAncientSuite(t *testing.T, newFn func(kinds []string) ethdb.R
 		// Ancient write should work after resetting
 		db.Reset()
 		db.ModifyAncients(func(op ethdb.AncientWriteOp) error {
-			for i := 0; i < 100; i++ {
+			for i := range 100 {
 				op.AppendRaw("a", uint64(i), data[i])
 			}
 			return nil

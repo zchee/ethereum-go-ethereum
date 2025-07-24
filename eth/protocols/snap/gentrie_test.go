@@ -161,12 +161,12 @@ func buildPartial(owner common.Hash, db ethdb.KeyValueReader, batch ethdb.Batch,
 // TestPartialGentree verifies if the trie constructed with partial states can
 // generate consistent trie nodes that match those of the full trie.
 func TestPartialGentree(t *testing.T) {
-	for round := 0; round < 100; round++ {
+	for range 100 {
 		var (
 			n       = rand.Intn(1024) + 10
 			entries []*kv
 		)
-		for i := 0; i < n; i++ {
+		for range n {
 			var val []byte
 			if rand.Intn(3) == 0 {
 				val = testrand.Bytes(3)
@@ -217,7 +217,7 @@ func TestPartialGentree(t *testing.T) {
 				t.Fatalf("Unexpected node write detected, want: %d, got: %d", len(inner), r.updates())
 			}
 		}
-		for j := 0; j < 100; j++ {
+		for range 100 {
 			var (
 				first int
 				last  int
@@ -253,12 +253,12 @@ func TestPartialGentree(t *testing.T) {
 // TestGentreeDanglingClearing tests if the dangling nodes falling within the
 // path space of constructed tree can be correctly removed.
 func TestGentreeDanglingClearing(t *testing.T) {
-	for round := 0; round < 100; round++ {
+	for range 100 {
 		var (
 			n       = rand.Intn(1024) + 10
 			entries []*kv
 		)
-		for i := 0; i < n; i++ {
+		for range n {
 			var val []byte
 			if rand.Intn(3) == 0 {
 				val = testrand.Bytes(3)
@@ -326,7 +326,7 @@ func TestGentreeDanglingClearing(t *testing.T) {
 				}
 			}
 		}
-		for j := 0; j < 100; j++ {
+		for range 100 {
 			var (
 				first int
 				last  int
@@ -363,7 +363,7 @@ func TestGentreeDanglingClearing(t *testing.T) {
 // even with lots of batch flushes.
 func TestFlushPartialTree(t *testing.T) {
 	var entries []*kv
-	for i := 0; i < 1024; i++ {
+	for range 1024 {
 		var val []byte
 		if rand.Intn(3) == 0 {
 			val = testrand.Bytes(3)
@@ -447,7 +447,7 @@ func TestFlushPartialTree(t *testing.T) {
 // each other.
 func TestBoundSplit(t *testing.T) {
 	var entries []*kv
-	for i := 0; i < 1024; i++ {
+	for range 1024 {
 		var val []byte
 		if rand.Intn(3) == 0 {
 			val = testrand.Bytes(3)
@@ -461,7 +461,7 @@ func TestBoundSplit(t *testing.T) {
 	}
 	slices.SortFunc(entries, (*kv).cmp)
 
-	for j := 0; j < 100; j++ {
+	for range 100 {
 		var (
 			next int
 			last int
@@ -521,7 +521,7 @@ func TestBoundSplit(t *testing.T) {
 // states), then nothing should be committed.
 func TestTinyPartialTree(t *testing.T) {
 	var entries []*kv
-	for i := 0; i < 1024; i++ {
+	for range 1024 {
 		var val []byte
 		if rand.Intn(3) == 0 {
 			val = testrand.Bytes(3)
@@ -554,7 +554,7 @@ func TestTinyPartialTree(t *testing.T) {
 
 func TestTrieDelete(t *testing.T) {
 	var entries []*kv
-	for i := 0; i < 1024; i++ {
+	for range 1024 {
 		entries = append(entries, &kv{
 			k: testrand.Bytes(32),
 			v: testrand.Bytes(32),

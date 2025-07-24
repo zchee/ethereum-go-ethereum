@@ -88,7 +88,7 @@ func TestIndexerRandomRange(t *testing.T) {
 		checkSnapshot bool
 	)
 	ts.fm.WaitIdle()
-	for i := 0; i < 200; i++ {
+	for range 200 {
 		switch rand.Intn(3) {
 		case 0:
 			// change history settings
@@ -188,7 +188,7 @@ func testIndexerMatcherView(t *testing.T, concurrentRead bool) {
 		hashes[i] = ts.matcherViewHash()
 	}
 	fork := len(forks) - 1
-	for i := 0; i < 5000; i++ {
+	for range 5000 {
 		oldFork := fork
 		fork = rand.Intn(len(forks))
 		stopCh := make(chan chan struct{})
@@ -439,7 +439,7 @@ func (ts *testSetup) matcherViewHash() common.Hash {
 	}
 	var hash common.Hash
 	hasher.Sum(hash[:0])
-	for i := 0; i < 50; i++ {
+	for range 50 {
 		hasher.Reset()
 		hasher.Write(hash[:])
 		lvptr := binary.LittleEndian.Uint64(hash[:8]) % headPtr

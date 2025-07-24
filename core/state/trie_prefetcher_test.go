@@ -41,7 +41,7 @@ func filledStateDB() *StateDB {
 	state.SetBalance(addr, uint256.NewInt(42), tracing.BalanceChangeUnspecified) // Change the account trie
 	state.SetCode(addr, []byte("hello"))                                         // Change an external metadata
 	state.SetState(addr, skey, sval)                                             // Change the storage trie
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		sk := common.BigToHash(big.NewInt(int64(i)))
 		state.SetState(addr, sk, sk) // Change the storage trie
 	}

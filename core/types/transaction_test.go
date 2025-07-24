@@ -271,7 +271,7 @@ func TestTransactionCoding(t *testing.T) {
 		recipient = common.HexToAddress("095e7baea6a6c7c4c2dfeb977efac326af552d87")
 		accesses  = AccessList{{Address: addr, StorageKeys: []common.Hash{{0}}}}
 	)
-	for i := uint64(0); i < 500; i++ {
+	for i := range uint64(500) {
 		var txdata TxData
 		switch i % 5 {
 		case 0:
@@ -490,7 +490,7 @@ func TestTransactionSizes(t *testing.T) {
 }
 
 func TestYParityJSONUnmarshalling(t *testing.T) {
-	baseJson := map[string]interface{}{
+	baseJson := map[string]any{
 		// type is filled in by the test
 		"chainId":              "0x7",
 		"nonce":                "0x0",
@@ -502,7 +502,7 @@ func TestYParityJSONUnmarshalling(t *testing.T) {
 		"maxFeePerBlobGas":     "0x3b9aca00",
 		"value":                "0x0",
 		"input":                "0x",
-		"accessList":           []interface{}{},
+		"accessList":           []any{},
 		"blobVersionedHashes": []string{
 			"0x010657f37554c781402a22917dee2f75def7ab966d7b770905398eba3c444014",
 		},

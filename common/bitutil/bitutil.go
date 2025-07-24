@@ -27,16 +27,13 @@ func XORBytes(dst, a, b []byte) int {
 // fastXORBytes xors in bulk. It only works on architectures that support
 // unaligned read/writes.
 func fastXORBytes(dst, a, b []byte) int {
-	n := len(a)
-	if len(b) < n {
-		n = len(b)
-	}
+	n := min(len(b), len(a))
 	w := n / wordSize
 	if w > 0 {
 		dw := *(*[]uintptr)(unsafe.Pointer(&dst))
 		aw := *(*[]uintptr)(unsafe.Pointer(&a))
 		bw := *(*[]uintptr)(unsafe.Pointer(&b))
-		for i := 0; i < w; i++ {
+		for i := range w {
 			dw[i] = aw[i] ^ bw[i]
 		}
 	}
@@ -49,11 +46,8 @@ func fastXORBytes(dst, a, b []byte) int {
 // safeXORBytes xors one by one. It works on all architectures, independent if
 // it supports unaligned read/writes or not.
 func safeXORBytes(dst, a, b []byte) int {
-	n := len(a)
-	if len(b) < n {
-		n = len(b)
-	}
-	for i := 0; i < n; i++ {
+	n := min(len(b), len(a))
+	for i := range n {
 		dst[i] = a[i] ^ b[i]
 	}
 	return n
@@ -71,16 +65,13 @@ func ANDBytes(dst, a, b []byte) int {
 // fastANDBytes ands in bulk. It only works on architectures that support
 // unaligned read/writes.
 func fastANDBytes(dst, a, b []byte) int {
-	n := len(a)
-	if len(b) < n {
-		n = len(b)
-	}
+	n := min(len(b), len(a))
 	w := n / wordSize
 	if w > 0 {
 		dw := *(*[]uintptr)(unsafe.Pointer(&dst))
 		aw := *(*[]uintptr)(unsafe.Pointer(&a))
 		bw := *(*[]uintptr)(unsafe.Pointer(&b))
-		for i := 0; i < w; i++ {
+		for i := range w {
 			dw[i] = aw[i] & bw[i]
 		}
 	}
@@ -93,11 +84,8 @@ func fastANDBytes(dst, a, b []byte) int {
 // safeANDBytes ands one by one. It works on all architectures, independent if
 // it supports unaligned read/writes or not.
 func safeANDBytes(dst, a, b []byte) int {
-	n := len(a)
-	if len(b) < n {
-		n = len(b)
-	}
-	for i := 0; i < n; i++ {
+	n := min(len(b), len(a))
+	for i := range n {
 		dst[i] = a[i] & b[i]
 	}
 	return n
@@ -115,16 +103,13 @@ func ORBytes(dst, a, b []byte) int {
 // fastORBytes ors in bulk. It only works on architectures that support
 // unaligned read/writes.
 func fastORBytes(dst, a, b []byte) int {
-	n := len(a)
-	if len(b) < n {
-		n = len(b)
-	}
+	n := min(len(b), len(a))
 	w := n / wordSize
 	if w > 0 {
 		dw := *(*[]uintptr)(unsafe.Pointer(&dst))
 		aw := *(*[]uintptr)(unsafe.Pointer(&a))
 		bw := *(*[]uintptr)(unsafe.Pointer(&b))
-		for i := 0; i < w; i++ {
+		for i := range w {
 			dw[i] = aw[i] | bw[i]
 		}
 	}
@@ -137,11 +122,8 @@ func fastORBytes(dst, a, b []byte) int {
 // safeORBytes ors one by one. It works on all architectures, independent if
 // it supports unaligned read/writes or not.
 func safeORBytes(dst, a, b []byte) int {
-	n := len(a)
-	if len(b) < n {
-		n = len(b)
-	}
-	for i := 0; i < n; i++ {
+	n := min(len(b), len(a))
+	for i := range n {
 		dst[i] = a[i] | b[i]
 	}
 	return n
@@ -162,7 +144,7 @@ func fastTestBytes(p []byte) bool {
 	w := n / wordSize
 	if w > 0 {
 		pw := *(*[]uintptr)(unsafe.Pointer(&p))
-		for i := 0; i < w; i++ {
+		for i := range w {
 			if pw[i] != 0 {
 				return true
 			}
@@ -179,7 +161,7 @@ func fastTestBytes(p []byte) bool {
 // safeTestBytes tests for set bits one byte at a time. It works on all
 // architectures, independent if it supports unaligned read/writes or not.
 func safeTestBytes(p []byte) bool {
-	for i := 0; i < len(p); i++ {
+	for i := range p {
 		if p[i] != 0 {
 			return true
 		}

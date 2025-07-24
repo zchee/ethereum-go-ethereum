@@ -207,7 +207,7 @@ func TestProcessVerkle(t *testing.T) {
 		t.Fatalf("block %d imported with error: %v", endnum, err)
 	}
 
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		b := blockchain.GetBlockByNumber(uint64(i) + 1)
 		if b == nil {
 			t.Fatalf("expected block %d to be present in chain", i+1)
@@ -242,7 +242,7 @@ func TestProcessParentBlockHash(t *testing.T) {
 			ProcessParentBlockHash(header.ParentHash, evm)
 		}
 		// Read block hashes for block 0 .. num-1
-		for i := 0; i < num; i++ {
+		for i := range num {
 			have, want := getContractStoredBlockHash(statedb, uint64(i), isVerkle), common.Hash{byte(i + 1)}
 			if have != want {
 				t.Errorf("block %d, verkle=%v, have parent hash %v, want %v", i, isVerkle, have, want)

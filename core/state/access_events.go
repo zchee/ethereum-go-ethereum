@@ -281,10 +281,7 @@ func (ae *AccessEvents) CodeChunksRangeGas(contractAddr common.Address, startPC,
 		return 0, 0
 	}
 
-	endPC := startPC + size
-	if endPC > codeLen {
-		endPC = codeLen
-	}
+	endPC := min(startPC+size, codeLen)
 	if endPC > 0 {
 		endPC -= 1 // endPC is the last bytecode that will be touched.
 	}

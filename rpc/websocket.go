@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"maps"
 	"net/http"
 	"net/url"
 	"os"
@@ -236,9 +237,7 @@ func newClientTransportWS(endpoint string, cfg *clientConfig) (reconnectFunc, er
 	if err != nil {
 		return nil, err
 	}
-	for key, values := range cfg.httpHeaders {
-		header[key] = values
-	}
+	maps.Copy(header, cfg.httpHeaders)
 
 	connect := func(ctx context.Context) (ServerCodec, error) {
 		header := header.Clone()
@@ -293,7 +292,7 @@ type websocketCodec struct {
 
 func newWebsocketCodec(conn *websocket.Conn, host string, req http.Header, readLimit int64) ServerCodec {
 	conn.SetReadLimit(readLimit)
-	encode := func(v interface{}, isErrorResponse bool) error {
+	encode := func(v any, isErrorResponse bool) error {
 		return conn.WriteJSON(v)
 	}
 	wc := &websocketCodec{
@@ -332,7 +331,7 @@ func (wc *websocketCodec) peerInfo() PeerInfo {
 	return wc.info
 }
 
-func (wc *websocketCodec) writeJSON(ctx context.Context, v interface{}, isError bool) error {
+func (wc *websocketCodec) writeJSON(ctx context.Context, v any, isError bool) error {
 	err := wc.jsonCodec.writeJSON(ctx, v, isError)
 	if err == nil {
 		// Notify pingLoop to delay the next idle ping.

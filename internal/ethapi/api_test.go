@@ -2871,7 +2871,7 @@ type account struct {
 }
 
 func newAccounts(n int) (accounts []account) {
-	for i := 0; i < n; i++ {
+	for range n {
 		key, _ := crypto.GenerateKey()
 		addr := crypto.PubkeyToAddress(key.PublicKey)
 		accounts = append(accounts, account{key: key, addr: addr})
@@ -3337,7 +3337,7 @@ func TestRPCGetBlockOrHeader(t *testing.T) {
 
 	for i, tt := range testSuite {
 		var (
-			result map[string]interface{}
+			result map[string]any
 			err    error
 			rpc    string
 		)
@@ -3523,7 +3523,7 @@ func TestRPCGetTransactionReceipt(t *testing.T) {
 
 	for i, tt := range testSuite {
 		var (
-			result interface{}
+			result any
 			err    error
 		)
 		result, err = api.GetTransactionReceipt(context.Background(), tt.txHash)
@@ -3621,7 +3621,7 @@ func TestRPCGetBlockReceipts(t *testing.T) {
 
 	for i, tt := range testSuite {
 		var (
-			result interface{}
+			result any
 			err    error
 		)
 		result, err = api.GetBlockReceipts(context.Background(), tt.test)
@@ -3633,7 +3633,7 @@ func TestRPCGetBlockReceipts(t *testing.T) {
 	}
 }
 
-func testRPCResponseWithFile(t *testing.T, testid int, result interface{}, rpc string, file string) {
+func testRPCResponseWithFile(t *testing.T, testid int, result any, rpc string, file string) {
 	data, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
 		t.Errorf("test %d: json marshal error", testid)

@@ -112,7 +112,7 @@ func NewCustom(file string, namespace string, customize func(options *opt.Option
 	options := configureOptions(customize)
 	logger := log.New("database", file)
 	usedCache := options.GetBlockCacheCapacity() + options.GetWriteBuffer()*2
-	logCtx := []interface{}{"cache", common.StorageSize(usedCache), "handles", options.GetOpenFilesCacheCapacity()}
+	logCtx := []any{"cache", common.StorageSize(usedCache), "handles", options.GetOpenFilesCacheCapacity()}
 	if options.ReadOnly {
 		logCtx = append(logCtx, "readonly", "true")
 	}
@@ -345,7 +345,7 @@ func (db *Database) SyncKeyValue() error {
 func (db *Database) meter(refresh time.Duration, namespace string) {
 	// Create the counters to store current and previous compaction values
 	compactions := make([][]int64, 2)
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		compactions[i] = make([]int64, 4)
 	}
 	// Create storages for states and warning log tracer.

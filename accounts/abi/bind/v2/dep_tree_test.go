@@ -18,6 +18,7 @@ package bind
 
 import (
 	"fmt"
+	"maps"
 	"regexp"
 	"testing"
 
@@ -211,9 +212,7 @@ func testLinkCase(tcInput linkTestCaseInput) error {
 
 	contractsList := linkDeps(contracts)
 
-	for pattern, override := range tc.overrides {
-		overrides[pattern] = override
-	}
+	maps.Copy(overrides, tc.overrides)
 
 	deployParams := &DeploymentParams{
 		Contracts: contractsList,

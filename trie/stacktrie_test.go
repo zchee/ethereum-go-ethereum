@@ -360,7 +360,7 @@ func TestStacktrieNotModifyValues(t *testing.T) {
 			return big.NewInt(int64(i)).Bytes()
 		}
 	}
-	for i := 0; i < 1000; i++ {
+	for i := range 1000 {
 		key := common.BigToHash(keyB)
 		value := getValue(i)
 		st.Update(key.Bytes(), value)
@@ -369,7 +369,7 @@ func TestStacktrieNotModifyValues(t *testing.T) {
 		keyDelta.Add(keyDelta, common.Big1)
 	}
 	st.Hash()
-	for i := 0; i < 1000; i++ {
+	for i := range 1000 {
 		want := getValue(i)
 
 		have := vals[i]
@@ -409,7 +409,7 @@ func BenchmarkInsert100K(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		s := NewStackTrie(nil)
 		var k uint64
-		for j := 0; j < num; j++ {
+		for range num {
 			binary.BigEndian.PutUint64(key, k)
 			if err := s.Update(key, val); err != nil {
 				b.Fatal(err)
@@ -432,7 +432,7 @@ func TestInsert100K(t *testing.T) {
 	var val = make([]byte, 20)
 	s := NewStackTrie(nil)
 	var k uint64
-	for j := 0; j < num; j++ {
+	for range num {
 		binary.BigEndian.PutUint64(key, k)
 		if err := s.Update(key, val); err != nil {
 			t.Fatal(err)

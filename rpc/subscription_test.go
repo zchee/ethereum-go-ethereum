@@ -36,7 +36,7 @@ func TestNewID(t *testing.T) {
 	t.Parallel()
 
 	hexchars := "0123456789ABCDEFabcdef"
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		id := string(NewID())
 		if !strings.HasPrefix(id, "0x") {
 			t.Fatalf("invalid ID prefix, want '0x...', got %s", id)
@@ -87,11 +87,11 @@ func TestSubscriptions(t *testing.T) {
 
 	// create subscriptions one by one
 	for i, namespace := range namespaces {
-		request := map[string]interface{}{
+		request := map[string]any{
 			"id":      i,
 			"method":  fmt.Sprintf("%s_subscribe", namespace),
 			"jsonrpc": "2.0",
-			"params":  []interface{}{"someSubscription", notificationCount, i},
+			"params":  []any{"someSubscription", notificationCount, i},
 		}
 		if err := out.Encode(&request); err != nil {
 			t.Fatalf("Could not create subscription: %v", err)
@@ -237,12 +237,12 @@ type mockConn struct {
 }
 
 // writeJSON writes a message to the connection.
-func (c *mockConn) writeJSON(ctx context.Context, msg interface{}, isError bool) error {
+func (c *mockConn) writeJSON(ctx context.Context, msg any, isError bool) error {
 	return c.enc.Encode(msg)
 }
 
 // closed returns a channel which is closed when the connection is closed.
-func (c *mockConn) closed() <-chan interface{} { return nil }
+func (c *mockConn) closed() <-chan any { return nil }
 
 // remoteAddr returns the peer address of the connection.
 func (c *mockConn) remoteAddr() string { return "" }

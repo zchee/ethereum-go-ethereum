@@ -96,7 +96,7 @@ func TestSimulatedBeaconSendWithdrawals(t *testing.T) {
 	defer subscription.Unsubscribe()
 
 	// generate some withdrawals
-	for i := 0; i < 20; i++ {
+	for i := range 20 {
 		withdrawals = append(withdrawals, types.Withdrawal{Index: uint64(i)})
 		if err := mock.withdrawals.add(&withdrawals[i]); err != nil {
 			t.Fatal("addWithdrawal failed", err)
@@ -105,7 +105,7 @@ func TestSimulatedBeaconSendWithdrawals(t *testing.T) {
 
 	// generate a bunch of transactions
 	signer := types.NewEIP155Signer(ethService.BlockChain().Config().ChainID)
-	for i := 0; i < 20; i++ {
+	for i := range 20 {
 		tx, err := types.SignTx(types.NewTransaction(uint64(i), common.Address{}, big.NewInt(1000), params.TxGas, big.NewInt(params.InitialBaseFee), nil), signer, testKey)
 		if err != nil {
 			t.Fatalf("error signing transaction, err=%v", err)
@@ -166,7 +166,7 @@ func TestOnDemandSpam(t *testing.T) {
 	defer sub.Unsubscribe()
 
 	// generate some withdrawals
-	for i := 0; i < wxCount; i++ {
+	for i := range wxCount {
 		withdrawals = append(withdrawals, types.Withdrawal{Index: uint64(i)})
 		if err := mock.withdrawals.add(&withdrawals[i]); err != nil {
 			t.Fatal("addWithdrawal failed", err)
@@ -175,7 +175,7 @@ func TestOnDemandSpam(t *testing.T) {
 
 	// generate a bunch of transactions
 	go func() {
-		for i := 0; i < txCount; i++ {
+		for i := range txCount {
 			tx, err := types.SignTx(types.NewTransaction(uint64(i), common.Address{byte(i), byte(1)}, big.NewInt(1000), params.TxGas, big.NewInt(params.InitialBaseFee*2), nil), signer, testKey)
 			if err != nil {
 				panic(fmt.Sprintf("error signing transaction: %v", err))

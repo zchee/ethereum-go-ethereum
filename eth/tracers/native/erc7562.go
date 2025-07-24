@@ -370,7 +370,7 @@ func (t *erc7562Tracer) OnOpcode(pc uint64, op byte, gas, cost uint64, scope tra
 		stackLimit      = min(stackSize, t.config.StackTopItemsSize)
 		stackTopItems   = make([]uint256.Int, stackLimit)
 	)
-	for i := 0; i < stackLimit; i++ {
+	for i := range stackLimit {
 		stackTopItems[i] = *peepStack(scope.StackData(), i)
 	}
 	opcodeWithStack = &opcodeWithPartialStack{

@@ -47,7 +47,7 @@ func (h *testEthHandler) Chain() *core.BlockChain              { panic("no backi
 func (h *testEthHandler) TxPool() eth.TxPool                   { panic("no backing tx pool") }
 func (h *testEthHandler) AcceptTxs() bool                      { return true }
 func (h *testEthHandler) RunPeer(*eth.Peer, eth.Handler) error { panic("not used in tests") }
-func (h *testEthHandler) PeerInfo(enode.ID) interface{}        { panic("not used in tests") }
+func (h *testEthHandler) PeerInfo(enode.ID) any                { panic("not used in tests") }
 
 func (h *testEthHandler) Handle(peer *eth.Peer, packet eth.Packet) error {
 	switch packet := packet.(type) {
@@ -147,7 +147,7 @@ func testForkIDSplit(t *testing.T, protocol uint) {
 		errc <- ethProFork.runEthPeer(peerNoFork, func(peer *eth.Peer) error { return nil })
 	}(errc)
 
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		select {
 		case err := <-errc:
 			if err != nil {
@@ -178,7 +178,7 @@ func testForkIDSplit(t *testing.T, protocol uint) {
 		errc <- ethProFork.runEthPeer(peerNoFork, func(peer *eth.Peer) error { return nil })
 	}(errc)
 
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		select {
 		case err := <-errc:
 			if err != nil {
@@ -210,7 +210,7 @@ func testForkIDSplit(t *testing.T, protocol uint) {
 	}(errc)
 
 	var successes int
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		select {
 		case err := <-errc:
 			if err == nil {
@@ -370,7 +370,7 @@ func testTransactionPropagation(t *testing.T, protocol uint) {
 	defer source.close()
 
 	sinks := make([]*testHandler, 10)
-	for i := 0; i < len(sinks); i++ {
+	for i := range sinks {
 		sinks[i] = newTestHandler()
 		defer sinks[i].close()
 
@@ -396,7 +396,7 @@ func testTransactionPropagation(t *testing.T, protocol uint) {
 	}
 	// Subscribe to all the transaction pools
 	txChs := make([]chan core.NewTxsEvent, len(sinks))
-	for i := 0; i < len(sinks); i++ {
+	for i := range sinks {
 		txChs[i] = make(chan core.NewTxsEvent, 1024)
 
 		sub := sinks[i].txpool.SubscribeTransactions(txChs[i], false)

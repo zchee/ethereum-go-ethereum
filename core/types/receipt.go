@@ -386,7 +386,7 @@ func (rs Receipts) DeriveFields(config *params.ChainConfig, blockHash common.Has
 	if len(txs) != len(rs) {
 		return errors.New("transaction and receipt count mismatch")
 	}
-	for i := 0; i < len(rs); i++ {
+	for i := range rs {
 		var cumulativeGasUsed uint64
 		if i > 0 {
 			cumulativeGasUsed = rs[i-1].CumulativeGasUsed

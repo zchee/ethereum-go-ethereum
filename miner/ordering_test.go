@@ -48,7 +48,7 @@ func TestTransactionPriceNonceSort1559(t *testing.T) {
 func testTransactionPriceNonceSort(t *testing.T, baseFee *big.Int) {
 	// Generate a batch of accounts to start with
 	keys := make([]*ecdsa.PrivateKey, 25)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 	}
 	signer := types.LatestSignerForChainID(common.Big1)
@@ -59,7 +59,7 @@ func testTransactionPriceNonceSort(t *testing.T, baseFee *big.Int) {
 	for start, key := range keys {
 		addr := crypto.PubkeyToAddress(key.PublicKey)
 		count := 25
-		for i := 0; i < 25; i++ {
+		for i := range 25 {
 			var tx *types.Transaction
 			gasFeeCap := rand.Intn(50)
 			if baseFee == nil {
@@ -144,7 +144,7 @@ func TestTransactionTimeSort(t *testing.T) {
 	t.Parallel()
 	// Generate a batch of accounts to start with
 	keys := make([]*ecdsa.PrivateKey, 5)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
 	}
 	signer := types.HomesteadSigner{}

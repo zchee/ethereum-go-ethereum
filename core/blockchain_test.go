@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"maps"
 	gomath "math"
 	"math/big"
 	"math/rand"
@@ -556,11 +557,11 @@ func testReorgShort(t *testing.T, full bool, scheme string) {
 	// we need a fairly long chain of blocks with different difficulties for a short
 	// one to become heavier than a long one. The 96 is an empirical value.
 	easy := make([]int64, 96)
-	for i := 0; i < len(easy); i++ {
+	for i := range easy {
 		easy[i] = 60
 	}
 	diff := make([]int64, len(easy)-1)
-	for i := 0; i < len(diff); i++ {
+	for i := range diff {
 		diff[i] = -9
 	}
 	testReorg(t, easy, diff, 12615120+params.GenesisDifficulty.Int64(), full, scheme)
@@ -756,7 +757,7 @@ func testFastVsFullChains(t *testing.T, scheme string) {
 	}
 
 	// Iterate over all chain data components, and cross reference
-	for i := 0; i < len(blocks); i++ {
+	for i := range blocks {
 		num, hash, time := blocks[i].NumberU64(), blocks[i].Hash(), blocks[i].Time()
 
 		if fheader, aheader := fast.GetHeaderByHash(hash), archive.GetHeaderByHash(hash); fheader.Hash() != aheader.Hash() {
@@ -1137,7 +1138,7 @@ func testLogRebirth(t *testing.T, scheme string) {
 	// This chain contains 10 logs.
 	genDb, chain, _ := GenerateChainWithGenesis(gspec, engine, 3, func(i int, gen *BlockGen) {
 		if i < 2 {
-			for ii := 0; ii < 5; ii++ {
+			for range 5 {
 				tx, err := types.SignNewTx(key1, signer, &types.LegacyTx{
 					Nonce:    gen.TxNonce(addr1),
 					GasPrice: gen.header.BaseFee,
@@ -1163,7 +1164,7 @@ func testLogRebirth(t *testing.T, scheme string) {
 			// The last (head) block is not part of the reorg-chain, we can ignore it
 			return
 		}
-		for ii := 0; ii < 5; ii++ {
+		for range 5 {
 			tx, err := types.SignNewTx(key1, signer, &types.LegacyTx{
 				Nonce:    gen.TxNonce(addr1),
 				GasPrice: gen.header.BaseFee,
@@ -1545,7 +1546,7 @@ func testBlockchainHeaderchainReorgConsistency(t *testing.T, scheme string) {
 
 	// Generate a bunch of fork blocks, each side forking from the canonical chain
 	forks := make([]*types.Block, len(blocks))
-	for i := 0; i < len(forks); i++ {
+	for i := range forks {
 		parent := genesis.ToBlock()
 		if i > 0 {
 			parent = blocks[i-1]
@@ -1561,7 +1562,7 @@ func testBlockchainHeaderchainReorgConsistency(t *testing.T, scheme string) {
 	}
 	defer chain.Stop()
 
-	for i := 0; i < len(blocks); i++ {
+	for i := range blocks {
 		if _, err := chain.InsertChain(blocks[i : i+1]); err != nil {
 			t.Fatalf("block %d: failed to insert into chain: %v", i, err)
 		}
@@ -1590,7 +1591,7 @@ func TestTrieForkGC(t *testing.T) {
 
 	// Generate a bunch of fork blocks, each side forking from the canonical chain
 	forks := make([]*types.Block, len(blocks))
-	for i := 0; i < len(forks); i++ {
+	for i := range forks {
 		parent := genesis.ToBlock()
 		if i > 0 {
 			parent = blocks[i-1]
@@ -1605,7 +1606,7 @@ func TestTrieForkGC(t *testing.T) {
 	}
 	defer chain.Stop()
 
-	for i := 0; i < len(blocks); i++ {
+	for i := range blocks {
 		if _, err := chain.InsertChain(blocks[i : i+1]); err != nil {
 			t.Fatalf("block %d: failed to insert into chain: %v", i, err)
 		}
@@ -1614,7 +1615,7 @@ func TestTrieForkGC(t *testing.T) {
 		}
 	}
 	// Dereference all the recent tries and ensure no past trie is left in
-	for i := 0; i < state.TriesInMemory; i++ {
+	for i := range state.TriesInMemory {
 		chain.TrieDB().Dereference(blocks[len(blocks)-1-i].Root())
 		chain.TrieDB().Dereference(forks[len(blocks)-1-i].Root())
 	}
@@ -2413,7 +2414,7 @@ func benchmarkLargeNumberOfValueToNonexisting(b *testing.B, numTxs, numBlocks in
 
 	blockGenerator := func(i int, block *BlockGen) {
 		block.SetCoinbase(common.Address{1})
-		for txi := 0; txi < numTxs; txi++ {
+		for txi := range numTxs {
 			uniq := uint64(i*numTxs + txi)
 			recipient := recipientFn(uniq)
 			tx, err := types.SignTx(types.NewTransaction(uniq, recipient, big.NewInt(1), params.TxGas, block.header.BaseFee, nil), signer, testBankKey)
@@ -2973,9 +2974,7 @@ func testDeleteRecreateSlotsAcrossManyBlocks(t *testing.T, scheme string) {
 		var exp = new(expectation)
 		exp.blocknum = i + 1
 		exp.values = make(map[int]int)
-		for k, v := range current.values {
-			exp.values[k] = v
-		}
+		maps.Copy(exp.values, current.values)
 		exp.exist = current.exist
 
 		b.SetCoinbase(common.Address{1})
@@ -3584,7 +3583,7 @@ func testCanonicalHashMarker(t *testing.T, scheme string) {
 		}
 
 		// Ensure all hash markers are updated correctly
-		for i := 0; i < len(forkB); i++ {
+		for i := range forkB {
 			block := forkB[i]
 			hash := chain.GetCanonicalHash(block.NumberU64())
 			if hash != block.Hash() {
@@ -4263,14 +4262,14 @@ func testChainReorgSnapSync(t *testing.T, ancientLimit uint64) {
 	}
 
 	// Iterate over all chain data components, and cross reference
-	for i := 0; i < len(blocks); i++ {
+	for i := range blocks {
 		num, hash := blocks[i].NumberU64(), blocks[i].Hash()
 		header := chain.GetHeaderByNumber(num)
 		if header.Hash() != hash {
 			t.Errorf("block #%d: header mismatch: want: %v, got: %v", num, hash, header.Hash())
 		}
 	}
-	for i := 0; i < len(chainA); i++ {
+	for i := range chainA {
 		num, hash := chainA[i].NumberU64(), chainA[i].Hash()
 		header := chain.GetHeaderByNumber(num)
 		if header == nil {
@@ -4280,7 +4279,7 @@ func testChainReorgSnapSync(t *testing.T, ancientLimit uint64) {
 			t.Errorf("block #%d: unexpected canonical header: %v", num, hash)
 		}
 	}
-	for i := 0; i < len(chainB); i++ {
+	for i := range chainB {
 		num, hash := chainB[i].NumberU64(), chainB[i].Hash()
 		header := chain.GetHeaderByNumber(num)
 		if header.Hash() != hash {
@@ -4391,7 +4390,7 @@ func testInsertChainWithCutoff(t *testing.T, cutoff uint64, ancientLimit uint64,
 	}
 
 	// Iterate over all chain data components, and cross reference
-	for i := 0; i < len(blocks); i++ {
+	for i := range blocks {
 		num, hash := blocks[i].NumberU64(), blocks[i].Hash()
 
 		// Canonical headers should be visible regardless of cutoff
@@ -4493,7 +4492,7 @@ func TestGetCanonicalReceipt(t *testing.T) {
 
 	chain.InsertReceiptChain(blocks, types.EncodeBlockReceiptLists(receipts), 0)
 
-	for i := 0; i < chainLength; i++ {
+	for i := range chainLength {
 		block := blocks[i]
 		blockReceipts := chain.GetReceiptsByHash(block.Hash())
 		chain.receiptsCache.Purge() // ugly hack

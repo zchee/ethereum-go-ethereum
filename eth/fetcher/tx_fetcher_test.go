@@ -80,7 +80,7 @@ type isUnderpriced int
 // runner.
 type txFetcherTest struct {
 	init  func() *TxFetcher
-	steps []interface{}
+	steps []any
 }
 
 // Tests that transaction announcements with associated metadata are added to a
@@ -99,7 +99,7 @@ func TestTransactionFetcherWaiting(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Initial announcement to get something into the waitlist
 			doTxNotify{peer: "A", hashes: []common.Hash{{0x01}, {0x02}}, types: []byte{types.LegacyTxType, types.LegacyTxType}, sizes: []uint32{111, 222}},
 			isWaiting(map[string][]announce{
@@ -301,7 +301,7 @@ func TestTransactionFetcherSkipWaiting(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Push an initial announcement through to the scheduled stage
 			doTxNotify{
 				peer:   "A",
@@ -391,7 +391,7 @@ func TestTransactionFetcherSingletonRequesting(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Push an initial announcement through to the scheduled stage
 			doTxNotify{peer: "A", hashes: []common.Hash{{0x01}, {0x02}}, types: []byte{types.LegacyTxType, types.LegacyTxType}, sizes: []uint32{111, 222}},
 			isWaiting(map[string][]announce{
@@ -499,7 +499,7 @@ func TestTransactionFetcherFailedRescheduling(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Push an initial announcement through to the scheduled stage
 			doTxNotify{peer: "A", hashes: []common.Hash{{0x01}, {0x02}}, types: []byte{types.LegacyTxType, types.LegacyTxType}, sizes: []uint32{111, 222}},
 			isWaiting(map[string][]announce{
@@ -582,7 +582,7 @@ func TestTransactionFetcherCleanup(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Push an initial announcement through to the scheduled stage
 			doTxNotify{peer: "A", hashes: []common.Hash{testTxsHashes[0]}, types: []byte{testTxs[0].Type()}, sizes: []uint32{uint32(testTxs[0].Size())}},
 			isWaiting(map[string][]announce{
@@ -626,7 +626,7 @@ func TestTransactionFetcherCleanupEmpty(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Push an initial announcement through to the scheduled stage
 			doTxNotify{peer: "A", hashes: []common.Hash{testTxsHashes[0]}, types: []byte{testTxs[0].Type()}, sizes: []uint32{uint32(testTxs[0].Size())}},
 			isWaiting(map[string][]announce{
@@ -669,7 +669,7 @@ func TestTransactionFetcherMissingRescheduling(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Push an initial announcement through to the scheduled stage
 			doTxNotify{peer: "A",
 				hashes: []common.Hash{testTxsHashes[0], testTxsHashes[1], testTxsHashes[2]},
@@ -730,7 +730,7 @@ func TestTransactionFetcherMissingCleanup(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Push an initial announcement through to the scheduled stage
 			doTxNotify{peer: "A",
 				hashes: []common.Hash{testTxsHashes[0], testTxsHashes[1]},
@@ -779,7 +779,7 @@ func TestTransactionFetcherBroadcasts(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Set up three transactions to be in different stats, waiting, queued and fetching
 			doTxNotify{peer: "A", hashes: []common.Hash{testTxsHashes[0]}, types: []byte{testTxs[0].Type()}, sizes: []uint32{uint32(testTxs[0].Size())}},
 			doWait{time: txArriveTimeout, step: true},
@@ -833,7 +833,7 @@ func TestTransactionFetcherWaitTimerResets(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			doTxNotify{peer: "A", hashes: []common.Hash{{0x01}}, types: []byte{types.LegacyTxType}, sizes: []uint32{111}},
 			isWaiting(map[string][]announce{
 				"A": {
@@ -905,7 +905,7 @@ func TestTransactionFetcherTimeoutRescheduling(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Push an initial announcement through to the scheduled stage
 			doTxNotify{
 				peer:   "A",
@@ -981,7 +981,7 @@ func TestTransactionFetcherTimeoutTimerResets(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			doTxNotify{peer: "A", hashes: []common.Hash{{0x01}}, types: []byte{types.LegacyTxType}, sizes: []uint32{111}},
 			doWait{time: txArriveTimeout, step: true},
 			doTxNotify{peer: "B", hashes: []common.Hash{{0x02}}, types: []byte{types.LegacyTxType}, sizes: []uint32{222}},
@@ -1039,7 +1039,7 @@ func TestTransactionFetcherRateLimiting(t *testing.T) {
 		sizes     []uint32
 		announces []announce
 	)
-	for i := 0; i < maxTxAnnounces; i++ {
+	for i := range maxTxAnnounces {
 		hash := common.Hash{byte(i / 256), byte(i % 256)}
 		hashes = append(hashes, hash)
 		ts = append(ts, types.LegacyTxType)
@@ -1059,7 +1059,7 @@ func TestTransactionFetcherRateLimiting(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Announce all the transactions, wait a bit and ensure only a small
 			// percentage gets requested
 			doTxNotify{peer: "A", hashes: hashes, types: ts, sizes: sizes},
@@ -1089,7 +1089,7 @@ func TestTransactionFetcherBandwidthLimiting(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Announce mid size transactions from A to verify that multiple
 			// ones can be piled into a single request.
 			doTxNotify{peer: "A",
@@ -1149,7 +1149,7 @@ func TestTransactionFetcherDoSProtection(t *testing.T) {
 		sizesA    []uint32
 		announceA []announce
 	)
-	for i := 0; i < maxTxAnnounces+1; i++ {
+	for i := range maxTxAnnounces + 1 {
 		hash := common.Hash{0x01, byte(i / 256), byte(i % 256)}
 		hashesA = append(hashesA, hash)
 		typesA = append(typesA, types.LegacyTxType)
@@ -1167,7 +1167,7 @@ func TestTransactionFetcherDoSProtection(t *testing.T) {
 		sizesB    []uint32
 		announceB []announce
 	)
-	for i := 0; i < maxTxAnnounces+1; i++ {
+	for i := range maxTxAnnounces + 1 {
 		hash := common.Hash{0x02, byte(i / 256), byte(i % 256)}
 		hashesB = append(hashesB, hash)
 		typesB = append(typesB, types.LegacyTxType)
@@ -1185,7 +1185,7 @@ func TestTransactionFetcherDoSProtection(t *testing.T) {
 		sizesC    []uint32
 		announceC []announce
 	)
-	for i := 0; i < maxTxAnnounces+2; i++ {
+	for i := range maxTxAnnounces + 2 {
 		hash := common.Hash{0x03, byte(i / 256), byte(i % 256)}
 		hashesC = append(hashesC, hash)
 		typesC = append(typesC, types.LegacyTxType)
@@ -1206,7 +1206,7 @@ func TestTransactionFetcherDoSProtection(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Announce half of the transaction and wait for them to be scheduled
 			doTxNotify{peer: "A", hashes: hashesA[:maxTxAnnounces/2], types: typesA[:maxTxAnnounces/2], sizes: sizesA[:maxTxAnnounces/2]},
 			doTxNotify{peer: "B", hashes: hashesB[:maxTxAnnounces/2-1], types: typesB[:maxTxAnnounces/2-1], sizes: sizesB[:maxTxAnnounces/2-1]},
@@ -1270,7 +1270,7 @@ func TestTransactionFetcherUnderpricedDedup(t *testing.T) {
 				func(common.Hash) bool { return false },
 				func(txs []*types.Transaction) []error {
 					errs := make([]error, len(txs))
-					for i := 0; i < len(errs); i++ {
+					for i := range errs {
 						if i%3 == 0 {
 							errs[i] = txpool.ErrUnderpriced
 						} else if i%3 == 1 {
@@ -1285,7 +1285,7 @@ func TestTransactionFetcherUnderpricedDedup(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Deliver a transaction through the fetcher, but reject as underpriced
 			doTxNotify{peer: "A",
 				hashes: []common.Hash{testTxsHashes[0], testTxsHashes[1]},
@@ -1320,7 +1320,7 @@ func TestTransactionFetcherUnderpricedDoSProtection(t *testing.T) {
 
 	// Create a slew of transactions to max out the underpriced set
 	var txs []*types.Transaction
-	for i := 0; i < maxTxUnderpricedSetSize+1; i++ {
+	for range maxTxUnderpricedSetSize + 1 {
 		txs = append(txs, types.NewTransaction(rand.Uint64(), common.Address{byte(rand.Intn(256))}, new(big.Int), 0, new(big.Int), nil))
 	}
 	var (
@@ -1340,8 +1340,8 @@ func TestTransactionFetcherUnderpricedDoSProtection(t *testing.T) {
 		})
 	}
 	// Generate a set of steps to announce and deliver the entire set of transactions
-	var steps []interface{}
-	for i := 0; i < maxTxUnderpricedSetSize/maxTxRetrievals; i++ {
+	var steps []any
+	for i := range maxTxUnderpricedSetSize / maxTxRetrievals {
 		steps = append(steps, doTxNotify{
 			peer:   "A",
 			hashes: hashes[i*maxTxRetrievals : (i+1)*maxTxRetrievals],
@@ -1371,7 +1371,7 @@ func TestTransactionFetcherUnderpricedDoSProtection(t *testing.T) {
 				func(common.Hash) bool { return false },
 				func(txs []*types.Transaction) []error {
 					errs := make([]error, len(txs))
-					for i := 0; i < len(errs); i++ {
+					for i := range errs {
 						errs[i] = txpool.ErrUnderpriced
 					}
 					return errs
@@ -1380,7 +1380,7 @@ func TestTransactionFetcherUnderpricedDoSProtection(t *testing.T) {
 				nil,
 			)
 		},
-		steps: append(steps, []interface{}{
+		steps: append(steps, []any{
 			// The preparation of the test has already been done in `steps`, add the last check
 			doTxNotify{
 				peer:   "A",
@@ -1408,7 +1408,7 @@ func TestTransactionFetcherOutOfBoundDeliveries(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Deliver something out of the blue
 			isWaiting(nil),
 			isScheduled{nil, nil, nil},
@@ -1467,7 +1467,7 @@ func TestTransactionFetcherDrop(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Set up a few hashes into various stages
 			doTxNotify{peer: "A", hashes: []common.Hash{{0x01}}, types: []byte{types.LegacyTxType}, sizes: []uint32{111}},
 			doWait{time: txArriveTimeout, step: true},
@@ -1541,7 +1541,7 @@ func TestTransactionFetcherDropRescheduling(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Set up a few hashes into various stages
 			doTxNotify{peer: "A", hashes: []common.Hash{{0x01}}, types: []byte{types.LegacyTxType}, sizes: []uint32{111}},
 			doWait{time: txArriveTimeout, step: true},
@@ -1587,7 +1587,7 @@ func TestInvalidAnnounceMetadata(t *testing.T) {
 				func(peer string) { drop <- peer },
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Initial announcement to get something into the waitlist
 			doTxNotify{
 				peer:   "A",
@@ -1670,7 +1670,7 @@ func TestTransactionFetcherFuzzCrash01(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Get a transaction into fetching mode and make it dangling with a broadcast
 			doTxNotify{peer: "A", hashes: []common.Hash{testTxsHashes[0]}, types: []byte{testTxs[0].Type()}, sizes: []uint32{uint32(testTxs[0].Size())}},
 			doWait{time: txArriveTimeout, step: true},
@@ -1698,7 +1698,7 @@ func TestTransactionFetcherFuzzCrash02(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Get a transaction into fetching mode and make it dangling with a broadcast
 			doTxNotify{peer: "A", hashes: []common.Hash{testTxsHashes[0]}, types: []byte{testTxs[0].Type()}, sizes: []uint32{uint32(testTxs[0].Size())}},
 			doWait{time: txArriveTimeout, step: true},
@@ -1728,7 +1728,7 @@ func TestTransactionFetcherFuzzCrash03(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Get a transaction into fetching mode and make it dangling with a broadcast
 			doTxNotify{
 				peer:   "A",
@@ -1770,7 +1770,7 @@ func TestTransactionFetcherFuzzCrash04(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Get a transaction into fetching mode and make it dangling with a broadcast
 			doTxNotify{peer: "A", hashes: []common.Hash{testTxsHashes[0]}, types: []byte{testTxs[0].Type()}, sizes: []uint32{uint32(testTxs[0].Size())}},
 			doWait{time: txArriveTimeout, step: true},
@@ -1800,7 +1800,7 @@ func TestBlobTransactionAnnounce(t *testing.T) {
 				nil,
 			)
 		},
-		steps: []interface{}{
+		steps: []any{
 			// Initial announcement to get something into the waitlist
 			doTxNotify{peer: "A", hashes: []common.Hash{{0x01}, {0x02}}, types: []byte{types.LegacyTxType, types.LegacyTxType}, sizes: []uint32{111, 222}},
 			isWaiting(map[string][]announce{
@@ -2198,7 +2198,7 @@ func TestTransactionForgotten(t *testing.T) {
 		func(common.Hash) bool { return false },
 		func(txs []*types.Transaction) []error {
 			errs := make([]error, len(txs))
-			for i := 0; i < len(errs); i++ {
+			for i := range errs {
 				errs[i] = txpool.ErrUnderpriced
 			}
 			return errs

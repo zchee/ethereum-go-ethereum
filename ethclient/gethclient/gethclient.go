@@ -242,8 +242,8 @@ func toBlockNumArg(number *big.Int) string {
 	return fmt.Sprintf("<invalid %d>", number)
 }
 
-func toCallArg(msg ethereum.CallMsg) interface{} {
-	arg := map[string]interface{}{
+func toCallArg(msg ethereum.CallMsg) any {
+	arg := map[string]any{
 		"from": msg.From,
 		"to":   msg.To,
 	}
@@ -308,7 +308,7 @@ func (a OverrideAccount) MarshalJSON() ([]byte, error) {
 		Nonce     hexutil.Uint64              `json:"nonce,omitempty"`
 		Code      string                      `json:"code,omitempty"`
 		Balance   *hexutil.Big                `json:"balance,omitempty"`
-		State     interface{}                 `json:"state,omitempty"`
+		State     any                         `json:"state,omitempty"`
 		StateDiff map[common.Hash]common.Hash `json:"stateDiff,omitempty"`
 	}
 

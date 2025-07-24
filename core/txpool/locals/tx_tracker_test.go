@@ -114,7 +114,7 @@ func (env *testEnv) makeTxs(n int) []*types.Transaction {
 	nonce := state.GetNonce(address)
 
 	var txs []*types.Transaction
-	for i := 0; i < n; i++ {
+	for i := range n {
 		tx, _ := types.SignTx(types.NewTransaction(nonce+uint64(i), common.Address{0x00}, big.NewInt(1000), params.TxGas, big.NewInt(params.GWei), nil), signer, key)
 		txs = append(txs, tx)
 	}

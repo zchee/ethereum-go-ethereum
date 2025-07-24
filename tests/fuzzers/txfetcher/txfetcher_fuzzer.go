@@ -125,7 +125,7 @@ func fuzz(input []byte) int {
 				types        = make([]byte, announce)
 				sizes        = make([]uint32, announce)
 			)
-			for i := 0; i < len(announces); i++ {
+			for i := range announces {
 				annBuf := make([]byte, 2)
 				if n, err := r.Read(annBuf); err != nil || n != 2 {
 					return 0
@@ -163,7 +163,7 @@ func fuzz(input []byte) int {
 				deliverIdxs = make([]int, deliver)
 				deliveries  = make([]*types.Transaction, deliver)
 			)
-			for i := 0; i < len(deliveries); i++ {
+			for i := range deliveries {
 				deliverBuf := make([]byte, 2)
 				if n, err := r.Read(deliverBuf); err != nil || n != 2 {
 					return 0

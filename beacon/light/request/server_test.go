@@ -134,7 +134,7 @@ func TestServerEventRateLimit(t *testing.T) {
 	})
 	expEvents := func(send, expAllowed int) {
 		eventCount = 0
-		for sent := 0; sent < send; sent++ {
+		for range send {
 			rs.eventCb(Event{Type: testEventType})
 		}
 		if eventCount != expAllowed {

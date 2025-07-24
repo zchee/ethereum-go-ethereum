@@ -58,7 +58,7 @@ type Encoder interface {
 // buffered.
 //
 // Please see package-level documentation of encoding rules.
-func Encode(w io.Writer, val interface{}) error {
+func Encode(w io.Writer, val any) error {
 	// Optimization: reuse *encBuffer when called by EncodeRLP.
 	if buf := encBufferFromWriter(w); buf != nil {
 		return buf.encode(val)
@@ -74,7 +74,7 @@ func Encode(w io.Writer, val interface{}) error {
 
 // EncodeToBytes returns the RLP encoding of val.
 // Please see package-level documentation for the encoding rules.
-func EncodeToBytes(val interface{}) ([]byte, error) {
+func EncodeToBytes(val any) ([]byte, error) {
 	buf := getEncBuffer()
 	defer encBufferPool.Put(buf)
 
@@ -89,7 +89,7 @@ func EncodeToBytes(val interface{}) ([]byte, error) {
 // data.
 //
 // Please see the documentation of Encode for the encoding rules.
-func EncodeToReader(val interface{}) (size int, r io.Reader, err error) {
+func EncodeToReader(val any) (size int, r io.Reader, err error) {
 	buf := getEncBuffer()
 	if err := buf.encode(val); err != nil {
 		encBufferPool.Put(buf)
@@ -311,7 +311,7 @@ func makeSliceWriter(typ reflect.Type, ts rlpstruct.Tags) (writer, error) {
 		// w.list is not called for them.
 		wfn = func(val reflect.Value, w *encBuffer) error {
 			vlen := val.Len()
-			for i := 0; i < vlen; i++ {
+			for i := range vlen {
 				if err := etypeinfo.writer(val.Index(i), w); err != nil {
 					return err
 				}
@@ -327,7 +327,7 @@ func makeSliceWriter(typ reflect.Type, ts rlpstruct.Tags) (writer, error) {
 				return nil
 			}
 			listOffset := w.list()
-			for i := 0; i < vlen; i++ {
+			for i := range vlen {
 				if err := etypeinfo.writer(val.Index(i), w); err != nil {
 					return err
 				}

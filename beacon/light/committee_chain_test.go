@@ -197,7 +197,7 @@ func TestCommitteeChainFork(t *testing.T) {
 	c.addFixedCommitteeRoot(tcBase, 1, nil)
 	c.addCommittee(tcBase, 0, nil)
 	// shared section should sync without errors
-	for period := uint64(0); period < 7; period++ {
+	for period := range uint64(7) {
 		c.insertUpdate(tcBase, period, true, nil)
 	}
 	c.insertUpdate(tcBase, 7, true, ErrInvalidUpdate) // wrong fork

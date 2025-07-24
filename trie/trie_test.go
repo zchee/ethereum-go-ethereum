@@ -199,7 +199,7 @@ func TestGet(t *testing.T) {
 	updateString(trie, "dog", "puppy")
 	updateString(trie, "dogglesworth", "cat")
 
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		res := getString(trie, "dog")
 		if !bytes.Equal(res, []byte("puppy")) {
 			t.Errorf("expected puppy got %x", res)
@@ -639,7 +639,7 @@ func benchGet(b *testing.B) {
 	triedb := newTestDatabase(rawdb.NewMemoryDatabase(), rawdb.HashScheme)
 	trie := NewEmpty(triedb)
 	k := make([]byte, 32)
-	for i := 0; i < benchElemCount; i++ {
+	for i := range benchElemCount {
 		binary.LittleEndian.PutUint64(k, uint64(i))
 		v := make([]byte, 32)
 		binary.LittleEndian.PutUint64(v, uint64(i))
@@ -719,7 +719,7 @@ func benchmarkCommitAfterHash(b *testing.B, collectLeaf bool) {
 	// Make the random benchmark deterministic
 	addresses, accounts := makeAccounts(b.N)
 	trie := NewEmpty(newTestDatabase(rawdb.NewMemoryDatabase(), rawdb.HashScheme))
-	for i := 0; i < len(addresses); i++ {
+	for i := range addresses {
 		trie.MustUpdate(crypto.Keccak256(addresses[i][:]), accounts[i])
 	}
 	// Insert the accounts into the trie and hash it
@@ -759,7 +759,7 @@ func TestCommitAfterHash(t *testing.T) {
 	// Create a realistic account trie to hash
 	addresses, accounts := makeAccounts(1000)
 	trie := NewEmpty(newTestDatabase(rawdb.NewMemoryDatabase(), rawdb.HashScheme))
-	for i := 0; i < len(addresses); i++ {
+	for i := range addresses {
 		trie.MustUpdate(crypto.Keccak256(addresses[i][:]), accounts[i])
 	}
 	// Insert the accounts into the trie and hash it
@@ -1130,7 +1130,7 @@ func BenchmarkHashFixedSize(b *testing.B) {
 func benchmarkHashFixedSize(b *testing.B, addresses [][20]byte, accounts [][]byte) {
 	b.ReportAllocs()
 	trie := NewEmpty(newTestDatabase(rawdb.NewMemoryDatabase(), rawdb.HashScheme))
-	for i := 0; i < len(addresses); i++ {
+	for i := range addresses {
 		trie.MustUpdate(crypto.Keccak256(addresses[i][:]), accounts[i])
 	}
 	// Insert the accounts into the trie and hash it
@@ -1181,7 +1181,7 @@ func BenchmarkCommitAfterHashFixedSize(b *testing.B) {
 func benchmarkCommitAfterHashFixedSize(b *testing.B, addresses [][20]byte, accounts [][]byte) {
 	b.ReportAllocs()
 	trie := NewEmpty(newTestDatabase(rawdb.NewMemoryDatabase(), rawdb.HashScheme))
-	for i := 0; i < len(addresses); i++ {
+	for i := range addresses {
 		trie.MustUpdate(crypto.Keccak256(addresses[i][:]), accounts[i])
 	}
 	// Insert the accounts into the trie and hash it
@@ -1210,7 +1210,7 @@ func TestDecodeNode(t *testing.T) {
 		hash  = make([]byte, 20)
 		elems = make([]byte, 20)
 	)
-	for i := 0; i < 5000000; i++ {
+	for range 5000000 {
 		prng.Read(hash)
 		prng.Read(elems)
 		decodeNode(hash, elems)
@@ -1251,7 +1251,7 @@ func testCommit(b *testing.B, n int, parallel bool) {
 	tries := make([]*Trie, b.N)
 	for i := 0; i < b.N; i++ {
 		tries[i] = NewEmpty(nil)
-		for j := 0; j < n; j++ {
+		for range n {
 			key := testrand.Bytes(32)
 			val := testrand.Bytes(32)
 			tries[i].Update(key, val)
@@ -1263,7 +1263,7 @@ func testCommit(b *testing.B, n int, parallel bool) {
 	}
 	b.ResetTimer()
 	b.ReportAllocs()
-	for i := 0; i < len(tries); i++ {
+	for i := range tries {
 		tries[i].Commit(true)
 	}
 }
@@ -1272,7 +1272,7 @@ func TestCommitCorrect(t *testing.T) {
 	var paraTrie = NewEmpty(nil)
 	var refTrie = NewEmpty(nil)
 
-	for j := 0; j < 5000; j++ {
+	for range 5000 {
 		key := testrand.Bytes(32)
 		val := testrand.Bytes(32)
 		paraTrie.Update(key, val)
@@ -1344,7 +1344,7 @@ func TestTrieCopy(t *testing.T) {
 	})
 
 	var entries []kv
-	for i := 0; i < 256; i++ {
+	for range 256 {
 		entries = append(entries, kv{k: testrand.Bytes(32), v: testrand.Bytes(32)})
 	}
 	testTrieCopy(t, entries)
@@ -1412,7 +1412,7 @@ func TestTrieCopyOldTrie(t *testing.T) {
 	})
 
 	var entries []kv
-	for i := 0; i < 256; i++ {
+	for range 256 {
 		entries = append(entries, kv{k: testrand.Bytes(32), v: testrand.Bytes(32)})
 	}
 	testTrieCopyOldTrie(t, entries)
@@ -1433,7 +1433,7 @@ func testTrieCopyOldTrie(t *testing.T, entries []kv) {
 			trCpy.Update(val.k, testrand.Bytes(32))
 		}
 	}
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		trCpy.Update(testrand.Bytes(32), testrand.Bytes(32))
 	}
 	trCpy.Hash()
@@ -1463,7 +1463,7 @@ func TestTrieCopyNewTrie(t *testing.T) {
 	})
 
 	var entries []kv
-	for i := 0; i < 256; i++ {
+	for range 256 {
 		entries = append(entries, kv{k: testrand.Bytes(32), v: testrand.Bytes(32)})
 	}
 	testTrieCopyNewTrie(t, entries)
@@ -1484,7 +1484,7 @@ func testTrieCopyNewTrie(t *testing.T, entries []kv) {
 			tr.Update(val.k, testrand.Bytes(32))
 		}
 	}
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		tr.Update(testrand.Bytes(32), testrand.Bytes(32))
 	}
 

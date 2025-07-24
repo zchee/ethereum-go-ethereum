@@ -95,7 +95,7 @@ func checkChildren(root verkle.VerkleNode, resolver verkle.NodeResolverFn) error
 	case *verkle.LeafNode:
 		// sanity check: ensure at least one value is non-zero
 
-		for i := 0; i < verkle.NodeWidth; i++ {
+		for i := range verkle.NodeWidth {
 			if len(node.Value(i)) != 0 {
 				return nil
 			}

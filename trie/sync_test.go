@@ -41,7 +41,7 @@ func makeTestTrie(scheme string) (ethdb.Database, *testDb, *StateTrie, map[strin
 
 	// Fill it with some arbitrary data
 	content := make(map[string][]byte)
-	for i := byte(0); i < 255; i++ {
+	for i := range byte(255) {
 		// Map the same data under multiple keys
 		key, val := common.LeftPadBytes([]byte{1, i}, 32), []byte{i}
 		content[string(key)] = val
@@ -766,7 +766,7 @@ func testSyncMovingTarget(t *testing.T, scheme string) {
 		preRoot = srcTrie.Hash()
 		diff    = make(map[string][]byte)
 	)
-	for i := byte(0); i < 10; i++ {
+	for range byte(10) {
 		key, val := randBytes(32), randBytes(32)
 		srcTrie.MustUpdate(key, val)
 		diff[string(key)] = val
@@ -941,7 +941,7 @@ func testSyncAbort(t *testing.T, scheme string) {
 		key    = randBytes(32)
 		val    = randBytes(32)
 	)
-	for i := 0; i < 256; i++ {
+	for range 256 {
 		writeFn(randBytes(32), nil, srcTrie, stateA)
 	}
 	writeFn(key, val, srcTrie, stateA)

@@ -49,12 +49,12 @@ func getBlock(transactions int, uncles int, dataSize int) *types.Block {
 		func(n int, b *BlockGen) {
 			if n == uncles {
 				// Add transactions and stuff on the last block
-				for i := 0; i < transactions; i++ {
+				for i := range transactions {
 					tx, _ := types.SignTx(types.NewTransaction(uint64(i), aa,
 						big.NewInt(0), 50000, b.header.BaseFee, make([]byte, dataSize)), types.HomesteadSigner{}, key)
 					b.AddTx(tx)
 				}
-				for i := 0; i < uncles; i++ {
+				for i := range uncles {
 					b.AddUncle(&types.Header{ParentHash: b.PrevBlock(n - 1 - i).Hash(), Number: big.NewInt(int64(n - i))})
 				}
 			}

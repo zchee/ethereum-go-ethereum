@@ -520,10 +520,7 @@ func (i *indexIniter) index(done chan struct{}, interrupt *atomic.Int32, lastID 
 		batch   = newBatchIndexer(i.disk, false)
 	)
 	for current <= lastID {
-		count := lastID - current + 1
-		if count > historyReadBatch {
-			count = historyReadBatch
-		}
+		count := min(lastID-current+1, historyReadBatch)
 		histories, err := readHistories(i.freezer, current, count)
 		if err != nil {
 			// The history read might fall if the history is truncated from

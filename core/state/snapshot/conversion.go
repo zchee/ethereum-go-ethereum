@@ -162,7 +162,7 @@ func (stat *generateStats) report() {
 	stat.lock.RLock()
 	defer stat.lock.RUnlock()
 
-	ctx := []interface{}{
+	ctx := []any{
 		"accounts", stat.accounts,
 		"slots", stat.slots,
 		"elapsed", common.PrettyDuration(time.Since(stat.start)),
@@ -189,7 +189,7 @@ func (stat *generateStats) report() {
 					}
 				}
 			}
-			ctx = append(ctx, []interface{}{
+			ctx = append(ctx, []any{
 				"eta", common.PrettyDuration(eta),
 			}...)
 		}
@@ -202,12 +202,12 @@ func (stat *generateStats) reportDone() {
 	stat.lock.RLock()
 	defer stat.lock.RUnlock()
 
-	var ctx []interface{}
-	ctx = append(ctx, []interface{}{"accounts", stat.accounts}...)
+	var ctx []any
+	ctx = append(ctx, []any{"accounts", stat.accounts}...)
 	if stat.slots != 0 {
-		ctx = append(ctx, []interface{}{"slots", stat.slots}...)
+		ctx = append(ctx, []any{"slots", stat.slots}...)
 	}
-	ctx = append(ctx, []interface{}{"elapsed", common.PrettyDuration(time.Since(stat.start))}...)
+	ctx = append(ctx, []any{"elapsed", common.PrettyDuration(time.Since(stat.start))}...)
 	log.Info("Iterated snapshot", ctx...)
 }
 
@@ -259,7 +259,7 @@ func generateTrieRoot(db ethdb.KeyValueWriter, scheme string, it Iterator, accou
 	// processing and gathering results.
 	threads := runtime.NumCPU()
 	results := make(chan error, threads)
-	for i := 0; i < threads; i++ {
+	for range threads {
 		results <- nil // fill the semaphore
 	}
 	// stop is a helper function to shutdown the background threads
@@ -267,7 +267,7 @@ func generateTrieRoot(db ethdb.KeyValueWriter, scheme string, it Iterator, accou
 	stop := func(fail error) (common.Hash, error) {
 		close(in)
 		result := <-out
-		for i := 0; i < threads; i++ {
+		for range threads {
 			if err := <-results; err != nil && fail == nil {
 				fail = err
 			}

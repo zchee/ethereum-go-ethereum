@@ -595,7 +595,7 @@ func testSupplyTracer(t *testing.T, genesis *core.Genesis, gen func(*core.BlockG
 	return output, chain, nil
 }
 
-func compareAsJSON(t *testing.T, expected interface{}, actual interface{}) {
+func compareAsJSON(t *testing.T, expected any, actual any) {
 	t.Helper()
 	want, err := json.Marshal(expected)
 	if err != nil {

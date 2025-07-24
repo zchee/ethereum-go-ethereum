@@ -105,7 +105,7 @@ func (h *hasher) hashFullNodeChildren(n *fullNode) *fullNode {
 	var children [17]node
 	if h.parallel {
 		var wg sync.WaitGroup
-		for i := 0; i < 16; i++ {
+		for i := range 16 {
 			if child := n.Children[i]; child != nil {
 				wg.Add(1)
 				go func(i int) {
@@ -120,7 +120,7 @@ func (h *hasher) hashFullNodeChildren(n *fullNode) *fullNode {
 		}
 		wg.Wait()
 	} else {
-		for i := 0; i < 16; i++ {
+		for i := range 16 {
 			if child := n.Children[i]; child != nil {
 				children[i] = h.hash(child, false)
 			} else {

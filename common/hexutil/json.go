@@ -79,7 +79,7 @@ func (b Bytes) String() string {
 func (b Bytes) ImplementsGraphQLType(name string) bool { return name == "Bytes" }
 
 // UnmarshalGraphQL unmarshals the provided GraphQL query data.
-func (b *Bytes) UnmarshalGraphQL(input interface{}) error {
+func (b *Bytes) UnmarshalGraphQL(input any) error {
 	var err error
 	switch input := input.(type) {
 	case string:
@@ -179,10 +179,7 @@ func (b *Big) UnmarshalText(input []byte) error {
 	words := make([]big.Word, len(raw)/bigWordNibbles+1)
 	end := len(raw)
 	for i := range words {
-		start := end - bigWordNibbles
-		if start < 0 {
-			start = 0
-		}
+		start := max(end-bigWordNibbles, 0)
 		for ri := start; ri < end; ri++ {
 			nib := decodeNibble(raw[ri])
 			if nib == badNibble {
@@ -213,7 +210,7 @@ func (b *Big) String() string {
 func (b Big) ImplementsGraphQLType(name string) bool { return name == "BigInt" }
 
 // UnmarshalGraphQL unmarshals the provided GraphQL query data.
-func (b *Big) UnmarshalGraphQL(input interface{}) error {
+func (b *Big) UnmarshalGraphQL(input any) error {
 	var err error
 	switch input := input.(type) {
 	case string:
@@ -321,7 +318,7 @@ func (b Uint64) String() string {
 func (b Uint64) ImplementsGraphQLType(name string) bool { return name == "Long" }
 
 // UnmarshalGraphQL unmarshals the provided GraphQL query data.
-func (b *Uint64) UnmarshalGraphQL(input interface{}) error {
+func (b *Uint64) UnmarshalGraphQL(input any) error {
 	var err error
 	switch input := input.(type) {
 	case string:

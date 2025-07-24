@@ -21,6 +21,7 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
+	"slices"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -297,12 +298,12 @@ func (api *ConsensusAPI) forkchoiceUpdated(update engine.ForkchoiceStateV1, payl
 		finalized := api.remoteBlocks.get(update.FinalizedBlockHash)
 
 		// Header advertised via a past newPayload request. Start syncing to it.
-		context := []interface{}{"number", header.Number, "hash", header.Hash()}
+		context := []any{"number", header.Number, "hash", header.Hash()}
 		if update.FinalizedBlockHash != (common.Hash{}) {
 			if finalized == nil {
-				context = append(context, []interface{}{"finalized", "unknown"}...)
+				context = append(context, []any{"finalized", "unknown"}...)
 			} else {
-				context = append(context, []interface{}{"finalized", finalized.Number}...)
+				context = append(context, []any{"finalized", finalized.Number}...)
 			}
 		}
 		log.Info("Forkchoice requested sync to new head", context...)
@@ -947,12 +948,7 @@ func (api *ConsensusAPI) config() *params.ChainConfig {
 // is one of the forks provided.
 func (api *ConsensusAPI) checkFork(timestamp uint64, forks ...forks.Fork) bool {
 	latest := api.config().LatestFork(timestamp)
-	for _, fork := range forks {
-		if latest == fork {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(forks, latest)
 }
 
 // ExchangeCapabilities returns the current methods provided by this node.
@@ -1020,10 +1016,7 @@ func (api *ConsensusAPI) getBodiesByRange(start, count hexutil.Uint64) ([]*engin
 	}
 	// limit count up until current
 	current := api.eth.BlockChain().CurrentBlock().Number.Uint64()
-	last := uint64(start) + uint64(count) - 1
-	if last > current {
-		last = current
-	}
+	last := min(uint64(start)+uint64(count)-1, current)
 	bodies := make([]*engine.ExecutionPayloadBody, 0, uint64(count))
 	for i := uint64(start); i <= last; i++ {
 		block := api.eth.BlockChain().GetBlockByNumber(i)

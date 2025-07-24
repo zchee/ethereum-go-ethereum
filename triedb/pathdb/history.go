@@ -416,7 +416,7 @@ func (r *decoder) readStorage(accIndex accountIndex) ([]common.Hash, map[common.
 		list    = make([]common.Hash, 0, count)
 		storage = make(map[common.Hash][]byte, count)
 	)
-	for j := 0; j < count; j++ {
+	for j := range count {
 		var (
 			index slotIndex
 			start = (accIndex.storageOffset + uint32(j)) * uint32(slotIndexSize)
@@ -477,7 +477,7 @@ func (h *history) decode(accountData, storageData, accountIndexes, storageIndexe
 	if err := r.verify(); err != nil {
 		return err
 	}
-	for i := 0; i < count; i++ {
+	for i := range count {
 		// Resolve account first
 		accIndex, accData, err := r.readAccount(i)
 		if err != nil {
@@ -528,7 +528,7 @@ func readHistories(freezer ethdb.AncientReader, start uint64, count uint64) ([]*
 	if err != nil {
 		return nil, err
 	}
-	for i := 0; i < len(metaList); i++ {
+	for i := range metaList {
 		var m meta
 		if err := m.decode(metaList[i]); err != nil {
 			return nil, err
@@ -572,10 +572,9 @@ func writeHistory(writer ethdb.AncientWriter, dl *diffLayer) error {
 // and performs the callback on each item.
 func checkHistories(reader ethdb.AncientReader, start, count uint64, check func(*meta) error) error {
 	for count > 0 {
-		number := count
-		if number > 10000 {
-			number = 10000 // split the big read into small chunks
-		}
+		number := min(count,
+			// split the big read into small chunks
+			10000)
 		blobs, err := rawdb.ReadStateHistoryMetaList(reader, start, number)
 		if err != nil {
 			return err

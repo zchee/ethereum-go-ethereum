@@ -115,7 +115,7 @@ func (t *pathTrie) onTrieNode(path []byte, hash common.Hash, blob []byte) {
 			// The node with the path of the first committed one (e.g, N_1) is not
 			// removed because it's a sibling of the nodes we want to commit, not
 			// the parent or ancestor.
-			for i := 0; i < len(path); i++ {
+			for i := range path {
 				t.deleteNode(path[:i], false)
 			}
 		}

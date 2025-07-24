@@ -498,7 +498,7 @@ func (tt *cliqueTest) run(t *testing.T) {
 	if len(result) != len(signers) {
 		t.Fatalf("signers mismatch: have %x, want %x", result, signers)
 	}
-	for j := 0; j < len(result); j++ {
+	for j := range result {
 		if !bytes.Equal(result[j][:], signers[j][:]) {
 			t.Fatalf("signer %d: signer mismatch: have %x, want %x", j, result[j], signers[j])
 		}

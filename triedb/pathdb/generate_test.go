@@ -505,10 +505,10 @@ func TestGenerateWithManyExtraAccounts(t *testing.T) {
 	rawdb.WriteStorageSnapshot(helper.diskdb, key, hashData([]byte("key-3")), []byte("val-3"))
 
 	// 100 accounts exist only in snapshot
-	for i := 0; i < 1000; i++ {
+	for i := range 1000 {
 		acc := &types.StateAccount{Balance: uint256.NewInt(uint64(i)), Root: types.EmptyRootHash, CodeHash: types.EmptyCodeHash.Bytes()}
 		val, _ := rlp.EncodeToBytes(acc)
-		key := hashData([]byte(fmt.Sprintf("acc-%d", i)))
+		key := hashData(fmt.Appendf(nil, "acc-%d", i))
 		rawdb.WriteAccountSnapshot(helper.diskdb, key, val)
 	}
 
@@ -542,7 +542,7 @@ func TestGenerateWithExtraBeforeAndAfter(t *testing.T) {
 	rawdb.WriteAccountSnapshot(helper.diskdb, acctHashA, val)
 	rawdb.WriteAccountSnapshot(helper.diskdb, acctHashB, val)
 
-	for i := 0; i < 16; i++ {
+	for i := range 16 {
 		rawdb.WriteAccountSnapshot(helper.diskdb, common.Hash{byte(i)}, val)
 	}
 	_, dl := helper.CommitAndGenerate()
@@ -571,7 +571,7 @@ func TestGenerateWithMalformedStateData(t *testing.T) {
 	junk := make([]byte, 100)
 	copy(junk, []byte{0xde, 0xad})
 	rawdb.WriteAccountSnapshot(helper.diskdb, acctHash, junk)
-	for i := 0; i < 16; i++ {
+	for i := range 16 {
 		rawdb.WriteAccountSnapshot(helper.diskdb, common.Hash{byte(i)}, junk)
 	}
 
@@ -593,7 +593,7 @@ func TestGenerateWithMalformedStateData(t *testing.T) {
 func TestGenerateFromEmptySnap(t *testing.T) {
 	helper := newGenTester()
 
-	for i := 0; i < 400; i++ {
+	for i := range 400 {
 		stRoot := helper.makeStorageTrie(fmt.Sprintf("acc-%d", i), []string{"key-1", "key-2", "key-3"}, []string{"val-1", "val-2", "val-3"}, true)
 		helper.addTrieAccount(fmt.Sprintf("acc-%d", i), &types.StateAccount{Balance: uint256.NewInt(1), Root: stRoot, CodeHash: types.EmptyCodeHash.Bytes()})
 	}
@@ -622,13 +622,13 @@ func TestGenerateWithIncompleteStorage(t *testing.T) {
 	// We add 8 accounts, each one is missing exactly one of the storage slots. This means
 	// we don't have to order the keys and figure out exactly which hash-key winds up
 	// on the sensitive spots at the boundaries
-	for i := 0; i < 8; i++ {
+	for i := range 8 {
 		accKey := fmt.Sprintf("acc-%d", i)
 		stRoot := helper.makeStorageTrie(accKey, stKeys, stVals, true)
 		helper.addAccount(accKey, &types.StateAccount{Balance: uint256.NewInt(uint64(i)), Root: stRoot, CodeHash: types.EmptyCodeHash.Bytes()})
 		var moddedKeys []string
 		var moddedVals []string
-		for ii := 0; ii < 8; ii++ {
+		for ii := range 8 {
 			if ii != i {
 				moddedKeys = append(moddedKeys, stKeys[ii])
 				moddedVals = append(moddedVals, stVals[ii])

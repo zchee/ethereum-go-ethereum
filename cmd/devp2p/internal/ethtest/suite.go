@@ -175,7 +175,7 @@ to check if the node disconnects after receiving multiple invalid requests.`)
 	}
 
 	// Send request 10 times. Some clients are lient on the first few invalids.
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		badReq.RequestId = uint64(i)
 		if err := conn.Write(ethProto, eth.GetBlockHeadersMsg, badReq); err != nil {
 			if err == errDisc {
@@ -500,7 +500,7 @@ func (s *Suite) TestMaliciousHandshake(t *utesting.T) {
 			t.Fatalf("could not write to connection: %v", err)
 		}
 		// Check that the peer disconnected
-		for i := 0; i < 2; i++ {
+		for range 2 {
 			code, _, err := conn.Read()
 			if err != nil {
 				// Client may have disconnected without sending disconnect msg.
@@ -737,7 +737,7 @@ on another peer connection using GetPooledTransactions.`)
 		hashes      []common.Hash
 		set         = make(map[common.Hash]struct{})
 	)
-	for i := 0; i < count; i++ {
+	for i := range count {
 		inner := &types.DynamicFeeTx{
 			ChainID:   s.chain.config.ChainID,
 			Nonce:     nonce + uint64(i),
@@ -809,7 +809,7 @@ the transactions using a GetPooledTransactions request.`)
 		txTypes     = make([]byte, count)
 		sizes       = make([]uint32, count)
 	)
-	for i := 0; i < count; i++ {
+	for i := range count {
 		inner := &types.DynamicFeeTx{
 			ChainID:   s.chain.config.ChainID,
 			Nonce:     nonce + uint64(i),
@@ -884,7 +884,7 @@ func makeSidecar(data ...byte) *types.BlobTxSidecar {
 
 func (s *Suite) makeBlobTxs(count, blobs int, discriminator byte) (txs types.Transactions) {
 	from, nonce := s.chain.GetSender(5)
-	for i := 0; i < count; i++ {
+	for i := range count {
 		// Make blob data, max of 2 blobs per tx.
 		blobdata := make([]byte, blobs%3)
 		for i := range blobdata {

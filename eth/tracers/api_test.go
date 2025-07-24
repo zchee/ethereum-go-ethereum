@@ -1046,7 +1046,7 @@ type Account struct {
 }
 
 func newAccounts(n int) (accounts []Account) {
-	for i := 0; i < n; i++ {
+	for range n {
 		key, _ := crypto.GenerateKey()
 		addr := crypto.PubkeyToAddress(key.PublicKey)
 		accounts = append(accounts, Account{key: key, addr: addr})
@@ -1070,7 +1070,7 @@ func newStates(keys []common.Hash, vals []common.Hash) map[common.Hash]common.Ha
 		panic("invalid input")
 	}
 	m := make(map[common.Hash]common.Hash)
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		m[keys[i]] = vals[i]
 	}
 	return m

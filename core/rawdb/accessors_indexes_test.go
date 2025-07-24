@@ -205,7 +205,7 @@ func TestFindTxInBlockBody(t *testing.T) {
 	WriteBlock(db, block)
 
 	rlp := ReadBodyRLP(db, block.Hash(), block.NumberU64())
-	for i := 0; i < len(txs); i++ {
+	for i := range txs {
 		tx, txIndex, err := findTxInBlockBody(rlp, txs[i].Hash())
 		if err != nil {
 			t.Fatalf("Failed to retrieve tx, err: %v", err)

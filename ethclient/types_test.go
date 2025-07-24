@@ -38,7 +38,7 @@ func TestToFilterArg(t *testing.T) {
 	for _, testCase := range []struct {
 		name   string
 		input  ethereum.FilterQuery
-		output interface{}
+		output any
 		err    error
 	}{
 		{
@@ -49,7 +49,7 @@ func TestToFilterArg(t *testing.T) {
 				ToBlock:   big.NewInt(2),
 				Topics:    [][]common.Hash{},
 			},
-			map[string]interface{}{
+			map[string]any{
 				"address":   addresses,
 				"fromBlock": "0x1",
 				"toBlock":   "0x2",
@@ -63,7 +63,7 @@ func TestToFilterArg(t *testing.T) {
 				Addresses: addresses,
 				Topics:    [][]common.Hash{},
 			},
-			map[string]interface{}{
+			map[string]any{
 				"address":   addresses,
 				"fromBlock": "0x0",
 				"toBlock":   "latest",
@@ -79,7 +79,7 @@ func TestToFilterArg(t *testing.T) {
 				ToBlock:   big.NewInt(-1),
 				Topics:    [][]common.Hash{},
 			},
-			map[string]interface{}{
+			map[string]any{
 				"address":   addresses,
 				"fromBlock": "pending",
 				"toBlock":   "pending",
@@ -94,7 +94,7 @@ func TestToFilterArg(t *testing.T) {
 				BlockHash: &blockHash,
 				Topics:    [][]common.Hash{},
 			},
-			map[string]interface{}{
+			map[string]any{
 				"address":   addresses,
 				"blockHash": blockHash,
 				"topics":    [][]common.Hash{},

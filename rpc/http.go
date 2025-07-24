@@ -23,10 +23,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"math"
 	"mime"
 	"net/http"
 	"net/url"
+	"slices"
 	"strconv"
 	"sync"
 	"time"
@@ -44,7 +46,7 @@ type httpConn struct {
 	client    *http.Client
 	url       string
 	closeOnce sync.Once
-	closeCh   chan interface{}
+	closeCh   chan any
 	mu        sync.Mutex // protects headers
 	headers   http.Header
 	auth      HTTPAuth
@@ -54,7 +56,7 @@ type httpConn struct {
 // and some methods don't work. The panic() stubs here exist to ensure
 // this special treatment is correct.
 
-func (hc *httpConn) writeJSON(context.Context, interface{}, bool) error {
+func (hc *httpConn) writeJSON(context.Context, any, bool) error {
 	panic("writeJSON called on httpConn")
 }
 
@@ -75,7 +77,7 @@ func (hc *httpConn) close() {
 	hc.closeOnce.Do(func() { close(hc.closeCh) })
 }
 
-func (hc *httpConn) closed() <-chan interface{} {
+func (hc *httpConn) closed() <-chan any {
 	return hc.closeCh
 }
 
@@ -146,9 +148,7 @@ func newClientTransportHTTP(endpoint string, cfg *clientConfig) reconnectFunc {
 	headers := make(http.Header, 2+len(cfg.httpHeaders))
 	headers.Set("accept", contentType)
 	headers.Set("content-type", contentType)
-	for key, values := range cfg.httpHeaders {
-		headers[key] = values
-	}
+	maps.Copy(headers, cfg.httpHeaders)
 
 	client := cfg.httpClient
 	if client == nil {
@@ -160,7 +160,7 @@ func newClientTransportHTTP(endpoint string, cfg *clientConfig) reconnectFunc {
 		headers: headers,
 		url:     endpoint,
 		auth:    cfg.httpAuth,
-		closeCh: make(chan interface{}),
+		closeCh: make(chan any),
 	}
 
 	return func(ctx context.Context) (ServerCodec, error) {
@@ -168,7 +168,7 @@ func newClientTransportHTTP(endpoint string, cfg *clientConfig) reconnectFunc {
 	}
 }
 
-func (c *Client) sendHTTP(ctx context.Context, op *requestOp, msg interface{}) error {
+func (c *Client) sendHTTP(ctx context.Context, op *requestOp, msg any) error {
 	hc := c.writeConn.(*httpConn)
 	respBody, err := hc.doRequest(ctx, msg)
 	if err != nil {
@@ -201,7 +201,7 @@ func (c *Client) sendBatchHTTP(ctx context.Context, op *requestOp, msgs []*jsonr
 	return nil
 }
 
-func (hc *httpConn) doRequest(ctx context.Context, msg interface{}) (io.ReadCloser, error) {
+func (hc *httpConn) doRequest(ctx context.Context, msg any) (io.ReadCloser, error) {
 	body, err := json.Marshal(msg)
 	if err != nil {
 		return nil, err
@@ -351,10 +351,8 @@ func (s *Server) validateRequest(r *http.Request) (int, error) {
 	}
 	// Check content-type
 	if mt, _, err := mime.ParseMediaType(r.Header.Get("content-type")); err == nil {
-		for _, accepted := range acceptedContentTypes {
-			if accepted == mt {
-				return 0, nil
-			}
+		if slices.Contains(acceptedContentTypes, mt) {
+			return 0, nil
 		}
 	}
 	// Invalid content-type

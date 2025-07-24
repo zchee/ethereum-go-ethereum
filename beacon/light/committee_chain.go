@@ -292,10 +292,11 @@ func (s *CommitteeChain) deleteFixedCommitteeRootsFrom(period uint64) error {
 		// get unfixed but are still proven by the update chain. If there were
 		// committees present after the range proven by updates, those should be
 		// removed if the belonging fixed roots are also removed.
-		fromPeriod := s.updates.periods.End + 1 // not proven by updates
-		if period > fromPeriod {
-			fromPeriod = period // also not justified by fixed roots
-		}
+		fromPeriod := max(
+			// not proven by updates
+			period,
+			// also not justified by fixed roots
+			s.updates.periods.End+1)
 		s.deleteCommitteesFrom(batch, fromPeriod)
 	}
 	if err := batch.Write(); err != nil {

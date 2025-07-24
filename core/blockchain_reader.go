@@ -207,7 +207,7 @@ func (bc *BlockChain) GetBlocksFromHash(hash common.Hash, n int) (blocks []*type
 	if !ok {
 		return nil
 	}
-	for i := 0; i < n; i++ {
+	for range n {
 		block := bc.GetBlock(hash, number)
 		if block == nil {
 			break

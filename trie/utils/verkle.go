@@ -158,7 +158,7 @@ func GetTreeKeyWithEvaluatedAddress(evaluated *verkle.Point, treeIndex *uint256.
 
 	// little-endian, 32-byte aligned treeIndex
 	var index [32]byte
-	for i := 0; i < len(treeIndex); i++ {
+	for i := range len(treeIndex) {
 		binary.LittleEndian.PutUint64(index[i*8:(i+1)*8], treeIndex[i])
 	}
 	verkle.FromLEBytes(&poly[3], index[:16])

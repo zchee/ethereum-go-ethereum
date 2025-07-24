@@ -483,7 +483,7 @@ func (w *Wallet) selfDerive() {
 
 			context = context.Background()
 		)
-		for i := 0; i < len(nextAddrs); i++ {
+		for i := range nextAddrs {
 			for empty := false; !empty; {
 				// Retrieve the next derived Ethereum account
 				if nextAddrs[i] == (common.Address{}) {
@@ -1079,7 +1079,7 @@ func confirmPublicKey(sig, pubkey []byte) error {
 // recover the v value and produce a recoverable signature.
 func makeRecoverableSignature(hash, sig, expectedPubkey []byte) ([]byte, error) {
 	var libraryError error
-	for v := 0; v < 2; v++ {
+	for v := range 2 {
 		sig[64] = byte(v)
 		if pubkey, err := crypto.Ecrecover(hash, sig); err == nil {
 			if bytes.Equal(pubkey, expectedPubkey) {

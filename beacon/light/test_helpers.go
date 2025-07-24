@@ -73,7 +73,7 @@ func GenerateTestCheckpoint(period uint64, committee *types.SerializedSyncCommit
 }
 
 func makeBitmask(signerCount int) (bitmask [params.SyncCommitteeBitmaskSize]byte) {
-	for i := 0; i < params.SyncCommitteeSize; i++ {
+	for i := range params.SyncCommitteeSize {
 		if mrand.Intn(params.SyncCommitteeSize-i) < signerCount {
 			bitmask[i/8] += byte(1) << (i & 7)
 			signerCount--
@@ -104,7 +104,7 @@ func makeTestHeaderWithMerkleProof(slot, index uint64, value merkle.Value) (type
 }
 
 // syncCommittee holds either a blsSyncCommittee or a fake dummySyncCommittee used for testing
-type syncCommittee interface{}
+type syncCommittee any
 
 // committeeSigVerifier verifies sync committee signatures (either proper BLS
 // signatures or fake signatures used for testing)

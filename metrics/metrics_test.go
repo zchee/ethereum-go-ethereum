@@ -28,7 +28,7 @@ func BenchmarkMetrics(b *testing.B) {
 	b.ResetTimer()
 	var wg sync.WaitGroup
 	wg.Add(128)
-	for i := 0; i < 128; i++ {
+	for range 128 {
 		go func() {
 			defer wg.Done()
 			for i := 0; i < b.N; i++ {

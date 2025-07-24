@@ -55,7 +55,7 @@ var (
 const testMaxBlobsPerBlock = 6
 
 func init() {
-	for i := 0; i < 24; i++ {
+	for i := range 24 {
 		testBlob := &kzg4844.Blob{byte(i)}
 		testBlobs = append(testBlobs, testBlob)
 
@@ -223,7 +223,7 @@ func makeMultiBlobTx(nonce uint64, gasTipCap uint64, gasFeeCap uint64, blobFeeCa
 		commitments []kzg4844.Commitment
 		proofs      []kzg4844.Proof
 	)
-	for i := 0; i < blobCount; i++ {
+	for i := range blobCount {
 		blobs = append(blobs, *testBlobs[i])
 		commitments = append(commitments, testBlobCommits[i])
 		proofs = append(proofs, testBlobProofs[i])
@@ -565,7 +565,7 @@ func TestOpenDrops(t *testing.T) {
 		underpayer, _ = crypto.GenerateKey()
 		underpaid     = make(map[uint64]struct{})
 	)
-	for i := 0; i < 5; i++ { // make #0 underpriced
+	for i := range 5 { // make #0 underpriced
 		var tx *types.Transaction
 		if i == 0 {
 			tx = makeTx(uint64(i), 0, 0, 0, underpayer)
@@ -584,7 +584,7 @@ func TestOpenDrops(t *testing.T) {
 		outpricer, _ = crypto.GenerateKey()
 		outpriced    = make(map[uint64]struct{})
 	)
-	for i := 0; i < 5; i++ { // make #2 underpriced
+	for i := range 5 { // make #2 underpriced
 		var tx *types.Transaction
 		if i == 2 {
 			tx = makeTx(uint64(i), 0, 0, 0, outpricer)
@@ -646,7 +646,7 @@ func TestOpenDrops(t *testing.T) {
 		overcapper, _ = crypto.GenerateKey()
 		overcapped    = make(map[uint64]struct{})
 	)
-	for nonce := uint64(0); nonce < maxTxsPerAccount+3; nonce++ {
+	for nonce := range uint64(maxTxsPerAccount + 3) {
 		blob, _ := rlp.EncodeToBytes(makeTx(nonce, 1, 1, 1, overcapper))
 
 		id, _ := store.Put(blob)

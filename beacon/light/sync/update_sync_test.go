@@ -206,7 +206,7 @@ func TestRangeLock(t *testing.T) {
 
 	// Lock from 0 to 99.
 	r.lock(0, 100, 1)
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		if v, ok := r[uint64(i)]; v <= 0 || !ok {
 			t.Fatalf("integer space: %d not locked", i)
 		}
@@ -214,7 +214,7 @@ func TestRangeLock(t *testing.T) {
 
 	// Unlock from 0 to 99.
 	r.lock(0, 100, -1)
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		if v, ok := r[uint64(i)]; v > 0 || ok {
 			t.Fatalf("integer space: %d is locked", i)
 		}

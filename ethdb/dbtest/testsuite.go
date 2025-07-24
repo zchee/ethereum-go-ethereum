@@ -722,7 +722,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			db := New()
 			defer db.Close()
 
-			for i := 0; i < len(keys); i++ {
+			for i := range keys {
 				db.Put(keys[i], vals[i])
 			}
 		}
@@ -738,13 +738,13 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			db := New()
 			defer db.Close()
 
-			for i := 0; i < len(keys); i++ {
+			for i := range keys {
 				db.Put(keys[i], vals[i])
 			}
 			b.ResetTimer()
 			b.ReportAllocs()
 
-			for i := 0; i < len(keys); i++ {
+			for i := range keys {
 				db.Get(keys[i])
 			}
 		}
@@ -760,7 +760,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			db := New()
 			defer db.Close()
 
-			for i := 0; i < len(keys); i++ {
+			for i := range keys {
 				db.Put(keys[i], vals[i])
 			}
 			b.ResetTimer()
@@ -787,7 +787,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			defer db.Close()
 
 			batch := db.NewBatch()
-			for i := 0; i < len(keys); i++ {
+			for i := range keys {
 				batch.Put(keys[i], vals[i])
 			}
 			batch.Write()
@@ -804,7 +804,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			db := New()
 			defer db.Close()
 
-			for i := 0; i < count; i++ {
+			for i := range count {
 				db.Put([]byte(strconv.Itoa(i)), nil)
 			}
 			b.ResetTimer()
@@ -828,7 +828,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			defer db.Close()
 
 			// Prepare data
-			for i := 0; i < count; i++ {
+			for i := range count {
 				db.Put([]byte(strconv.Itoa(i)), nil)
 			}
 
@@ -858,7 +858,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			defer db.Close()
 
 			// Prepare initial data
-			for i := 0; i < count; i++ {
+			for i := range count {
 				db.Put([]byte(strconv.Itoa(i)), []byte("val"))
 			}
 

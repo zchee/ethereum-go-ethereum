@@ -655,7 +655,7 @@ func testGenerateWithManyExtraAccounts(t *testing.T, scheme string) {
 	}
 	{
 		// 100 accounts exist only in snapshot
-		for i := 0; i < 1000; i++ {
+		for i := range 1000 {
 			acc := &types.StateAccount{Balance: uint256.NewInt(uint64(i)), Root: types.EmptyRootHash, CodeHash: types.EmptyCodeHash.Bytes()}
 			val, _ := rlp.EncodeToBytes(acc)
 			key := hashData(fmt.Appendf(nil, "acc-%d", i))
@@ -781,7 +781,7 @@ func testGenerateFromEmptySnap(t *testing.T, scheme string) {
 	storageCheckRange = 20
 	helper := newHelper(scheme)
 	// Add 1K accounts to the trie
-	for i := 0; i < 400; i++ {
+	for i := range 400 {
 		stRoot := helper.makeStorageTrie(fmt.Sprintf("acc-%d", i), []string{"key-1", "key-2", "key-3"}, []string{"val-1", "val-2", "val-3"}, true)
 		helper.addTrieAccount(fmt.Sprintf("acc-%d", i),
 			&types.StateAccount{Balance: uint256.NewInt(1), Root: stRoot, CodeHash: types.EmptyCodeHash.Bytes()})
@@ -823,13 +823,13 @@ func testGenerateWithIncompleteStorage(t *testing.T, scheme string) {
 	// We add 8 accounts, each one is missing exactly one of the storage slots. This means
 	// we don't have to order the keys and figure out exactly which hash-key winds up
 	// on the sensitive spots at the boundaries
-	for i := 0; i < 8; i++ {
+	for i := range 8 {
 		accKey := fmt.Sprintf("acc-%d", i)
 		stRoot := helper.makeStorageTrie(accKey, stKeys, stVals, true)
 		helper.addAccount(accKey, &types.StateAccount{Balance: uint256.NewInt(uint64(i)), Root: stRoot, CodeHash: types.EmptyCodeHash.Bytes()})
 		var moddedKeys []string
 		var moddedVals []string
-		for ii := 0; ii < 8; ii++ {
+		for ii := range 8 {
 			if ii != i {
 				moddedKeys = append(moddedKeys, stKeys[ii])
 				moddedVals = append(moddedVals, stVals[ii])
